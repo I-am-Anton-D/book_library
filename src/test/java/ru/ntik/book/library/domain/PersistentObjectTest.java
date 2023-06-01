@@ -175,8 +175,8 @@ class PersistentObjectTest {
     }
 
     @Test
-    @DisplayName("Для покрытия")
-    void forCoverage() {
+    @DisplayName("to String test")
+    void toStringTest() {
         ImplPo po = new ImplPo();
         assertThat(po.getId()).isNull();
         assertThat(po.toString()).contains("PersistentObject");

@@ -26,8 +26,9 @@ public class BookDefinition extends PersistentObject {
     protected BookDefinition() {
     }
 
-    public BookDefinition(String name, String description,
-                             Long creator, int releaseYear, String coverType, String isbn) {
+    public BookDefinition(String name, String description, Long creator,
+                          int releaseYear, String coverType, String isbn) {
+
         super(name, description, creator);
 
         setReleaseYear(releaseYear);
@@ -81,5 +82,4 @@ public class BookDefinition extends PersistentObject {
     private static final int ISBN_MAX_LENGTH = 20;
     private static final String COLUMN_ISBN_DEFINITION = "VARCHAR(" + ISBN_MAX_LENGTH + ") " +
             "CHECK(length(" + COLUMN_ISBN_NAME + ") >= " + ISBN_MIN_LENGTH + ")";
-
 }

@@ -6,7 +6,6 @@ public class Checker {
             throw new IllegalArgumentException("min >= max");
         }
 
-
         if (s.length() < min || s.length() > max) {
             throw new IllegalArgumentException(
                     "The length of parameter is incorrect. " +
@@ -14,7 +13,6 @@ public class Checker {
                             "max length = " + max + ", " +
                             "current length = " + s.length());
         }
-
         return s;
     }
 
