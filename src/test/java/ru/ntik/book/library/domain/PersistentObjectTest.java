@@ -138,7 +138,6 @@ class PersistentObjectTest {
         assertThatCode(() -> new BookDefinition(BOOK_NAME, longDesc, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN)).doesNotThrowAnyException();
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("DM_STRING_CTOR")
     @Test
     @DisplayName("Проверят deepEquals")
     void deepEqualsTest() {
