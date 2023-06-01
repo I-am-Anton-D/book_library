@@ -1,10 +1,6 @@
 package ru.ntik.book.library.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.SequenceGenerator;
-import lombok.EqualsAndHashCode;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,12 +14,11 @@ import static ru.ntik.book.library.util.Constants.*;
 @MappedSuperclass
 
 @Getter
-@EqualsAndHashCode(of = {"id", "name", "description"})
 @ToString(exclude = "creator")
 
 abstract class PersistentObject {
     @Id
-    @SequenceGenerator(name = SEQ_NAME, sequenceName = SEQ_NAME, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = COLUMN_NAME, columnDefinition = COLUMN_NAME_DEFINITION)
@@ -39,20 +34,22 @@ abstract class PersistentObject {
     @CreationTimestamp
     private Instant created;
 
+    @Version
+    private int version;
+
     protected PersistentObject() {
     }
 
-    protected PersistentObject(Long id, String name, String description, Long creator) {
-        Objects.requireNonNull(id);
-        Objects.requireNonNull(creator);
-
-        this.id = id;
-        this.creator = creator;
-
+    protected PersistentObject(String name, String description, Long creator) {
         setName(name);
         setDescription(description);
+        setCreator(creator);
     }
 
+    private void setCreator(Long creator) {
+        Objects.requireNonNull(creator);
+        this.creator = creator;
+    }
 
     public void setName(String name) {
         Objects.requireNonNull(name);
@@ -63,9 +60,14 @@ abstract class PersistentObject {
         this.description = description == null ? null : Checker.checkStringLength(description, PO_MIN_DESC_LENGTH, PO_MAX_DESC_LENGTH);
     }
 
+    public boolean deepEquals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PersistentObject that)) return false;
 
-    //-------------------------
-    //TABLE, COLUMN DEFINITIONS
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
+                && Objects.equals(description, that.description);
+    }
+
     public static final String SEQ_NAME = "persistent_object_seq";
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_DESCRIPTION_NAME = "description";
