@@ -35,7 +35,7 @@ abstract class PersistentObject {
     private Instant created;
 
     @Version
-    private int version;
+    private short version;
 
     protected PersistentObject() {
     }

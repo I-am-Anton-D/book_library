@@ -1,8 +1,12 @@
 package ru.ntik.book.library.util;
 
+import java.util.Objects;
+
 public class Checker {
     public static String checkStringLength(String s, int min, int max) {
-         if (min >= max) {
+        Objects.requireNonNull(s);
+
+        if (min >= max) {
             throw new IllegalArgumentException("min >= max");
         }
 
@@ -16,5 +20,6 @@ public class Checker {
         return s;
     }
 
-    private Checker() {}
+    private Checker() {
+    }
 }
