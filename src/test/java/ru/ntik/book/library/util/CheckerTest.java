@@ -18,10 +18,8 @@ class CheckerTest {
         int min = 5;
         int max = 3;
 
-        assertThrows(IllegalArgumentException.class, () ->Checker.checkStringLength("String", min, max));
-
-        assertThrows(IllegalArgumentException.class, () ->Checker.checkStringLength("String", min, min));
-
+        assertThrows(IllegalArgumentException.class, () -> Checker.checkStringLength("String", min, max));
+        assertThrows(IllegalArgumentException.class, () -> Checker.checkStringLength("String", min, min));
     }
 
     @DisplayName("Верная длина")
@@ -34,13 +32,13 @@ class CheckerTest {
         assertThat(Checker.checkStringLength(s, 0, max)).isEqualTo(s);
         assertThat(Checker.checkStringLength(s, 0, s.length())).isEqualTo(s);
 
-        assertThrows(IllegalArgumentException.class, () -> Checker.checkStringLength(s, 20, 20+1));
+        assertThrows(IllegalArgumentException.class, () -> Checker.checkStringLength(s, 20, 20 + 1));
     }
 
     @DisplayName("Пустая строка")
     @Test
     void emptyString() {
-        assertThrows(IllegalArgumentException.class, ()->Checker.checkStringLength("",1, 2));
+        assertThrows(IllegalArgumentException.class, () -> Checker.checkStringLength("", 1, 2));
         assertThat(Checker.checkStringLength("", 0, 2)).isEmpty();
     }
 
@@ -50,4 +48,16 @@ class CheckerTest {
         assertThrows(NullPointerException.class, () -> Checker.checkStringLength(null, 10, 10));
     }
 
+    @DisplayName("Проверяет диапазон числа")
+    @Test
+    void checkNumberLimits() {
+        final int min = 10;
+        final int max = 20;
+        int value = 15;
+
+        assertThat(Checker.checkIntegerRange(value, min, max)).isEqualTo(value);
+        assertThrows(IllegalArgumentException.class, () -> Checker.checkIntegerRange(value, max, max + max));
+        assertThrows(IllegalArgumentException.class, () -> Checker.checkIntegerRange(value, min, min + 1));
+        assertThrows(NullPointerException.class, () -> Checker.checkIntegerRange(null, min, min + 1));
+    }
 }

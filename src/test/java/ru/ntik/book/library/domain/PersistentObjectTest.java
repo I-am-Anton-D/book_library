@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.util.ReflectionUtils;
+import ru.ntik.book.library.domain.enums.BookLanguage;
 
 import java.lang.reflect.Field;
 
@@ -23,10 +24,13 @@ class PersistentObjectTest {
     static final String COVER_TYPE = "paperback";
     static final String ISBN = "978-5-4461-0512-0";
 
+    static final int PAGE_COUNT = 1000;
+    static final BookLanguage BOOK_LANGUAGE = BookLanguage.RUSSIAN;
+
     @Test
     @DisplayName("Должен создаться экземпляр")
     void createInstanceTest() {
-        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN);
+        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE);
 
         assertThat(bd).isNotNull();
         assertThat(bd.getId()).isNull();
@@ -43,10 +47,13 @@ class PersistentObjectTest {
     @Test
     @DisplayName("Не создать без имени и с пустым")
     void nameIsMandatory() {
-        assertThrows(NullPointerException.class, () -> new BookDefinition(null, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN));
-        assertThrows(IllegalArgumentException.class, () -> new BookDefinition("", BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN));
+        assertThrows(NullPointerException.class,
+                () -> new BookDefinition(null, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE));
+        assertThrows(IllegalArgumentException.class,
+                () -> new BookDefinition("", BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE));
 
-        assertThatCode(() -> new BookDefinition("A", BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN)).doesNotThrowAnyException();
+        assertThatCode(
+                () -> new BookDefinition("A", BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE)).doesNotThrowAnyException();
     }
 
 
@@ -61,23 +68,28 @@ class PersistentObjectTest {
         assertThat(s128).hasSize(128);
         assertThat(s129).hasSize(129);
 
-        assertThatCode(() -> new BookDefinition(s127, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN)).doesNotThrowAnyException();
-        assertThatCode(() -> new BookDefinition(s128, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN)).doesNotThrowAnyException();
-        assertThrows(IllegalArgumentException.class, () -> new BookDefinition(s129, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN));
+        assertThatCode(() ->
+                new BookDefinition(s127, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE)).doesNotThrowAnyException();
+        assertThatCode(() ->
+                new BookDefinition(s128, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE)).doesNotThrowAnyException();
+        assertThrows(IllegalArgumentException.class,
+                () -> new BookDefinition(s129, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE));
     }
 
     @Test
     @DisplayName("Description не обязателен, не не может быть пустым")
     void descriptionIsOptional() {
-        assertThatCode(() -> new BookDefinition(BOOK_NAME, null, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN)).doesNotThrowAnyException();
-        assertThrows(IllegalArgumentException.class, () -> new BookDefinition(BOOK_NAME, "", CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN));
+        assertThatCode(() ->
+                new BookDefinition(BOOK_NAME, null, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE)).doesNotThrowAnyException();
+        assertThrows(IllegalArgumentException.class,
+                () -> new BookDefinition(BOOK_NAME, "", CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE));
     }
 
     @Test
     @DisplayName("Длинное описание")
     void longDesc() {
         String longDesc = """
-                Эта книга воплощает знания и опыт работы авторов с каркасом Spring Framework и сопутствующими технологиями удаленного взаимодействия, 
+                Эта книга воплощает знания и опыт работы авторов с каркасом Spring Framework и сопутствующими технологиями удаленного взаимодействия,
                 Hibernate, EJB и пр. Она дает возможность читателю не только усвоить основные понятия и принципы работы с Spring Framework, но и 
                 научиться рационально пользоваться этим каркасом для построения различных уровней и частей корпоративных приложений на языке Java, 
                 включая обработку транзакций, представление веб-содержимого и прочего содержимого, развертывание и многое другое. Полноценные примеры
@@ -143,14 +155,15 @@ class PersistentObjectTest {
                 Комментарий
                 5-е издание""";
 
-        assertThatCode(() -> new BookDefinition(BOOK_NAME, longDesc, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN)).doesNotThrowAnyException();
+        assertThatCode(() ->
+                new BookDefinition(BOOK_NAME, longDesc, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE)).doesNotThrowAnyException();
     }
 
     @DisplayName("Не создать с нуловым creator")
     @Test
     void creatorIsNull() {
         assertThrows(NullPointerException.class, ()->
-        new BookDefinition(BOOK_NAME, BOOK_DESC, null, RELEASE_YEAR, COVER_TYPE, ISBN));
+        new BookDefinition(BOOK_NAME, BOOK_DESC, null, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE));
     }
 
     @Test

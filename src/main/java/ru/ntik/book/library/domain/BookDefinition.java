@@ -2,7 +2,10 @@ package ru.ntik.book.library.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
+import ru.ntik.book.library.domain.enums.BookLanguage;
 import ru.ntik.book.library.util.Checker;
 
 import java.util.Objects;
@@ -23,33 +26,49 @@ public class BookDefinition extends PersistentObject {
     @Column(name = COLUMN_ISBN_NAME, columnDefinition = COLUMN_ISBN_DEFINITION)
     private String isbn;
 
+    @Column(name = COLUMN_PAGE_COUNT_NAME, columnDefinition = COLUMN_PAGE_COUNT_DEFINITION)
+    private Integer pageCount;
+
+    @Enumerated(EnumType.STRING)
+    private BookLanguage language;
+
     protected BookDefinition() {
     }
 
-    public BookDefinition(String name, String description, Long creator,
-                          Integer releaseYear, String coverType, String isbn) {
+    public BookDefinition(String name, String description, Long creator, Integer releaseYear,
+                          String coverType, String isbn, Integer pageCount, BookLanguage language) {
 
         super(name, description, creator);
 
         setReleaseYear(releaseYear);
         setCoverType(coverType);
         setIsbn(isbn);
+        setPageCount(pageCount);
+        setLanguage(language);
     }
 
     public void setReleaseYear(Integer releaseYear) {
-        if (releaseYear != null && (releaseYear < RELEASE_YEAR_MIN || releaseYear > RELEASE_YEAR_MAX)) {
-            throw new IllegalArgumentException(String.format(
-                        "Release year not in bounds (min = %d, max = %d)", RELEASE_YEAR_MIN, RELEASE_YEAR_MAX));
-        }
-        this.releaseYear = releaseYear;
+        this.releaseYear = releaseYear == null ? null :
+                Checker.checkIntegerRange(releaseYear, RELEASE_YEAR_MIN, RELEASE_YEAR_MAX);
     }
 
     public void setCoverType(String coverType) {
-        this.coverType = coverType == null ? null : Checker.checkStringLength(coverType, 1, SMALL_STRING_LENGTH);
+        this.coverType = coverType == null ? null :
+                Checker.checkStringLength(coverType, 1, SMALL_STRING_LENGTH);
     }
 
     public void setIsbn(String isbn) {
-        this.isbn = isbn == null ? null : Checker.checkStringLength(isbn, ISBN_MIN_LENGTH, ISBN_MAX_LENGTH);
+        this.isbn = isbn == null ? null :
+                Checker.checkStringLength(isbn, ISBN_MIN_LENGTH, ISBN_MAX_LENGTH);
+    }
+
+    public void setPageCount(Integer pageCount) {
+        this.pageCount = pageCount == null ? null :
+            Checker.checkIntegerRange(pageCount, 1, BOOK_MAX_PAGE_COUNT);
+    }
+
+    public void setLanguage(BookLanguage language) {
+        this.language = language;
     }
 
     @Override
@@ -83,6 +102,13 @@ public class BookDefinition extends PersistentObject {
     private static final String COLUMN_ISBN_NAME = "isbn";
     public static final int ISBN_MIN_LENGTH = 10;
     public static final int ISBN_MAX_LENGTH = 20;
+
     private static final String COLUMN_ISBN_DEFINITION = "VARCHAR(" + ISBN_MAX_LENGTH + ") " +
             "CHECK(length(" + COLUMN_ISBN_NAME + ") >= " + ISBN_MIN_LENGTH + ")";
+
+    public static final int BOOK_MAX_PAGE_COUNT = 3000;
+    private static final String COLUMN_PAGE_COUNT_NAME = "page_count";
+    private static final String COLUMN_PAGE_COUNT_DEFINITION =
+            "SMALLINT CHECK(" + COLUMN_PAGE_COUNT_NAME + " BETWEEN 0 AND " + BOOK_MAX_PAGE_COUNT + ")";
+
 }
