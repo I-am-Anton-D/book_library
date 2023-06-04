@@ -6,6 +6,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.util.ReflectionUtils;
 import ru.ntik.book.library.domain.enums.BookLanguage;
+import ru.ntik.book.library.testutils.TestUtils;
 import ru.ntik.book.library.util.Constants;
 
 import java.lang.reflect.Field;
@@ -15,19 +16,11 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static ru.ntik.book.library.testutils.TestUtils.*;
 
 @DisplayName("Тесты сущности BookDefinition")
 @Execution(ExecutionMode.CONCURRENT)
 class BookDefinitionTest {
-
-    static final String BOOK_NAME = "BOOK_NAME";
-    static final String BOOK_DESC = "BOOK_DESCRIPTION";
-    static final Long CREATOR = 10L;
-    static final int RELEASE_YEAR = 2020;
-    static final String COVER_TYPE = "paperback";
-    static final String ISBN = "978-5-4461-0512-0";
-    static final int PAGE_COUNT = 1000;
-    static final BookLanguage BOOK_LANGUAGE = BookLanguage.RUSSIAN;
 
     @DisplayName("Создание экземпляра")
     @Test
@@ -35,7 +28,7 @@ class BookDefinitionTest {
         BookDefinition clear = new BookDefinition();
         assertThat(clear).isNotNull();
 
-        BookDefinition bd = createBookDefinition();
+        BookDefinition bd = TestUtils.createBookDefinition();
         assertThat(bd).isNotNull();
 
         BookDefinition bd2 =
@@ -46,7 +39,7 @@ class BookDefinitionTest {
     @DisplayName("Год релиза должен быть в диапозоне")
     @Test
     void checkReleaseYear() {
-        BookDefinition bd = createBookDefinition();
+        BookDefinition bd = TestUtils.createBookDefinition();
 
         bd.setReleaseYear(2020);
         assertThat(bd.getReleaseYear()).isEqualTo(2020);
@@ -70,7 +63,7 @@ class BookDefinitionTest {
     @DisplayName("Тип обложки должен быть в пределах")
     @Test
     void checkCoverType() {
-        BookDefinition bd = createBookDefinition();
+        BookDefinition bd = TestUtils.createBookDefinition();
 
         bd.setCoverType(null);
         assertThat(bd.getCoverType()).isNull();
@@ -99,7 +92,7 @@ class BookDefinitionTest {
     @DisplayName("ISBN должен быть в прделах")
     @Test
     void checkIsbn() {
-        BookDefinition bd = createBookDefinition();
+        BookDefinition bd = TestUtils.createBookDefinition();
         bd.setIsbn(null);
         assertThat(bd.getIsbn()).isNull();
 
@@ -125,7 +118,7 @@ class BookDefinitionTest {
     @DisplayName("Адекватное число страниц")
     @Test
     void checkPageCount() {
-        BookDefinition bd = createBookDefinition();
+        BookDefinition bd = TestUtils.createBookDefinition();
         assertThat(bd.getPageCount()).isEqualTo(PAGE_COUNT);
 
         assertThrows(IllegalArgumentException.class, () -> bd.setPageCount(0));
@@ -143,7 +136,7 @@ class BookDefinitionTest {
 
     @Test
     void languageTest() {
-        BookDefinition bd = createBookDefinition();
+        BookDefinition bd = TestUtils.createBookDefinition();
         assertThat(bd.getLanguage()).isEqualTo(BOOK_LANGUAGE);
 
         bd.setLanguage(BookLanguage.ENGLISH);
@@ -153,20 +146,20 @@ class BookDefinitionTest {
 
     @Test
     void toStringTest() {
-        BookDefinition bd = createBookDefinition();
+        BookDefinition bd = TestUtils.createBookDefinition();
         assertThat(bd.toString()).contains("BookDefinition");
     }
 
     @Test
     void equalsAndHashCode() {
         //Check simple
-        BookDefinition bd = createBookDefinition();
+        BookDefinition bd = TestUtils.createBookDefinition();
         assertThat(bd.hashCode()).isZero();
         assertThat(bd.equals("STRING")).isFalse();
         assertThat(bd.equals(bd)).isTrue();
 
         //Only with id can be equals
-        BookDefinition bd2 = createBookDefinition();
+        BookDefinition bd2 = TestUtils.createBookDefinition();
         assertThat(bd2.hashCode()).isZero();
         assertThat(bd.equals(bd2)).isFalse();
 
@@ -209,9 +202,5 @@ class BookDefinitionTest {
 
         //Not equals with dif ids
         assertThat(bd2.equals(bd)).isFalse();
-    }
-
-    public BookDefinition createBookDefinition() {
-        return new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE);
     }
 }
