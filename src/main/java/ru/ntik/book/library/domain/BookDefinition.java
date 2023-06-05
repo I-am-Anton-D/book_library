@@ -1,7 +1,6 @@
 package ru.ntik.book.library.domain;
 
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.Cache;
@@ -11,12 +10,13 @@ import ru.ntik.book.library.util.Checker;
 
 import java.util.Objects;
 
+import static ru.ntik.book.library.util.Constants.BOOK_DEFINITION_REGION_NAME;
 import static ru.ntik.book.library.util.Constants.SMALL_STRING_LENGTH;
 
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
-        region = "ru.ntik.book.library.domain.BookDefinition")
+        region = BOOK_DEFINITION_REGION_NAME)
 
 @Getter
 
@@ -94,7 +94,6 @@ public class BookDefinition extends PersistentObject {
     public int hashCode() {
         return getId() != null ? getId().hashCode() : 0;
     }
-
     private static final String COLUMN_RELEASE_YEAR_NAME = "release_year";
     public static final int RELEASE_YEAR_MIN = 1900;
     public static final int RELEASE_YEAR_MAX = 2040;
