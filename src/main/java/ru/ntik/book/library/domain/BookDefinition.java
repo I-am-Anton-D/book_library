@@ -1,10 +1,11 @@
 package ru.ntik.book.library.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+
+
+import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.ntik.book.library.domain.enums.BookLanguage;
 import ru.ntik.book.library.util.Checker;
 
@@ -13,6 +14,9 @@ import java.util.Objects;
 import static ru.ntik.book.library.util.Constants.SMALL_STRING_LENGTH;
 
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
+        region = "ru.ntik.book.library.domain.BookDefinition")
 
 @Getter
 
