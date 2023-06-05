@@ -10,14 +10,24 @@
         <jsr107:defaults enable-management="true" enable-statistics="true"/>
     </service>
 
-    <cache alias="ru.ntik.book.library.domain.BookDefinition" >
-        <key-type>java.lang.Long</key-type>
+    <!-- Persistent cache directory -->
+    <persistence directory="spring-boot-ehcache/cache" />
+
+    <!-- Default cache template -->
+    <cache-template name="default">
         <expiry>
-            <ttl unit="minutes">60</ttl>
+            <ttl unit="minutes">30</ttl>
         </expiry>
-          <resources>
-            <offheap unit="MB">50</offheap>
+
+        <resources>
+            <offheap unit="MB">100</offheap>
+            <disk persistent="true" unit="MB">200</disk>
         </resources>
+    </cache-template>
+
+    <cache alias="ru.ntik.book.library.domain.BookDefinition"  uses-template="default">
+        <key-type>java.lang.Long</key-type>
+        <value-type>ru.ntik.book.library.domain.BookDefinition</value-type>
     </cache>
 
 </config>

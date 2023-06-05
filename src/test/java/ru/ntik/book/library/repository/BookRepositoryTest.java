@@ -4,13 +4,11 @@ import io.github.yashchenkon.assertsqlcount.test.AssertSqlQueriesCount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.BookDefinition;
 import ru.ntik.book.library.testutils.TestUtils;
@@ -22,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 @ActiveProfiles("h2")
 @Transactional
 

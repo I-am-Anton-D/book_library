@@ -5,13 +5,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.CacheRegionStatistics;
-import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.*;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.BookDefinition;
 import ru.ntik.book.library.testutils.TestUtils;
@@ -22,13 +19,15 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 @ActiveProfiles("h2l2on")
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+
 class BookRepositoryCacheTest {
 
+    @Autowired
+    private SessionFactory sessionFactory;
     @Autowired
     BookRepository bookRepository;
 
@@ -39,8 +38,7 @@ class BookRepositoryCacheTest {
 
     @BeforeAll
     void init() {
-        final Statistics statistics = em.getEntityManagerFactory().unwrap(SessionFactory.class).getStatistics();
-        cache = statistics.getCacheRegionStatistics(Constants.BOOK_DEFINITION_REGION_NAME);
+        cache = sessionFactory.getStatistics().getCacheRegionStatistics(Constants.BOOK_DEFINITION_REGION_NAME);
     }
 
     @BeforeEach

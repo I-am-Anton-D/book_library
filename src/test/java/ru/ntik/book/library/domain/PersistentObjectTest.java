@@ -198,7 +198,7 @@ class PersistentObjectTest {
     void toStringTest() {
         ImplPo po = new ImplPo();
         assertThat(po.getId()).isNull();
-        assertThat(po.toString()).contains("PersistentObject");
+        assertThat(po.toString()).contains("ImplPo");
     }
 
     public static class ImplPo extends PersistentObject {}
