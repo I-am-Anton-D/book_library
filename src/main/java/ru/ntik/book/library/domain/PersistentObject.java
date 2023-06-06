@@ -2,7 +2,8 @@ package ru.ntik.book.library.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.*;
 import ru.ntik.book.library.util.Checker;
 
 import java.time.Instant;
@@ -11,7 +12,12 @@ import java.util.Objects;
 import static ru.ntik.book.library.util.Constants.*;
 
 @MappedSuperclass
+@OptimisticLocking(type = OptimisticLockType.DIRTY)
+@DynamicUpdate
+@BatchSize(size = PO_BATCH_SIZE)
+
 @Getter
+@NoArgsConstructor
 
 abstract class PersistentObject {
     @Id
@@ -30,12 +36,6 @@ abstract class PersistentObject {
     @Column(name = COLUMN_CREATED_NAME, columnDefinition = COLUMN_CREATED_DEFINITION, updatable = false)
     @CreationTimestamp
     private Instant created;
-
-    @Version
-    private short version;
-
-    protected PersistentObject() {
-    }
 
     protected PersistentObject(String name, String description, Long creator) {
         setName(name);
@@ -75,14 +75,13 @@ abstract class PersistentObject {
         if (this == o) return true;
         if (!(o instanceof PersistentObject that)) return false;
 
-        return getId() != null && that.getId() != null
-                && Objects.equals(getId(), that.getId());
-
+        return id != null && that.getId() != null
+                && Objects.equals(id, that.getId());
     }
 
     @Override
     public int hashCode() {
-        return getId() != null ? getId().hashCode() : 0;
+        return id != null ? id.hashCode() : 0;
     }
 
     private static final String COLUMN_NAME = "name";

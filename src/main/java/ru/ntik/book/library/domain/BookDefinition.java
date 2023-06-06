@@ -1,8 +1,9 @@
 package ru.ntik.book.library.domain;
 
-
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.ntik.book.library.domain.enums.BookLanguage;
@@ -12,11 +13,13 @@ import static ru.ntik.book.library.util.Constants.BOOK_DEFINITION_REGION_NAME;
 import static ru.ntik.book.library.util.Constants.SMALL_STRING_LENGTH;
 
 @Entity
+
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
         region = BOOK_DEFINITION_REGION_NAME)
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 public class BookDefinition extends PersistentObject {
     @Column(name = COLUMN_RELEASE_YEAR_NAME, columnDefinition = COLUMN_RELEASE_YEAR_DEFINITION)
@@ -34,8 +37,10 @@ public class BookDefinition extends PersistentObject {
     @Enumerated(EnumType.STRING)
     private BookLanguage language;
 
-    protected BookDefinition() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publisher_id", foreignKey = @ForeignKey(name = "pub_id_key"))
+    private Publisher publisher;
+
 
     public BookDefinition(String name, String description, Long creator, Integer releaseYear,
                           String coverType, String isbn, Integer pageCount, BookLanguage language) {
@@ -72,6 +77,11 @@ public class BookDefinition extends PersistentObject {
     public void setLanguage(BookLanguage language) {
         this.language = language;
     }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
+
     private static final String COLUMN_RELEASE_YEAR_NAME = "release_year";
     public static final int RELEASE_YEAR_MIN = 1900;
     public static final int RELEASE_YEAR_MAX = 2040;
@@ -89,5 +99,4 @@ public class BookDefinition extends PersistentObject {
     private static final String COLUMN_PAGE_COUNT_NAME = "page_count";
     private static final String COLUMN_PAGE_COUNT_DEFINITION =
             "SMALLINT CHECK(" + COLUMN_PAGE_COUNT_NAME + " BETWEEN 0 AND " + BOOK_MAX_PAGE_COUNT + ")";
-
 }

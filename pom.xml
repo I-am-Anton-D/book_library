@@ -10,17 +10,11 @@
     </parent>
 
     <groupId>ru.ntik.book</groupId>
-    <artifactId>Library</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>Library</name>
-    <description>Library</description>
+    <artifactId>bookkeeping</artifactId>
+    <version>0.0.1</version>
 
-    <repositories>
-        <repository>
-            <id>Vaadin Directory</id>
-            <url>https://maven.vaadin.com/vaadin-addons</url>
-        </repository>
-    </repositories>
+    <name>Bookkeeping application</name>
+    <description>Приложение по учету книг компании и сотрудников</description>
 
     <properties>
         <java.version>17</java.version>
@@ -46,9 +40,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-validation</artifactId>-->
+<!--        </dependency>-->
 
         <!--Web, front-->
         <!--        <dependency>-->
@@ -97,14 +97,9 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+
     </dependencies>
 
     <build>

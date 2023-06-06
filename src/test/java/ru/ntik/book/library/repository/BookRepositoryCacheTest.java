@@ -1,8 +1,6 @@
 package ru.ntik.book.library.repository;
 
 import io.github.yashchenkon.assertsqlcount.test.AssertSqlQueriesCount;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.CacheRegionStatistics;
 import org.junit.jupiter.api.*;
@@ -18,6 +16,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 @SpringBootTest
 @ActiveProfiles("h2l2on")
 @Transactional
@@ -27,12 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BookRepositoryCacheTest {
 
     @Autowired
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     private SessionFactory sessionFactory;
     @Autowired
     BookRepository bookRepository;
-
-    @PersistenceContext
-    EntityManager em;
 
     private CacheRegionStatistics cache;
 

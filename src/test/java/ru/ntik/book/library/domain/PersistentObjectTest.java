@@ -32,7 +32,6 @@ class PersistentObjectTest {
         assertThat(bd.getCoverType()).isEqualTo(COVER_TYPE);
         assertThat(bd.getIsbn()).isEqualTo(ISBN);
         assertThat(bd.getCreated()).isNull();
-        assertThat(bd.getVersion()).isZero();
     }
 
     @Test
@@ -201,6 +200,5 @@ class PersistentObjectTest {
         assertThat(po.toString()).contains("ImplPo");
     }
 
-    public static class ImplPo extends PersistentObject {}
-
+    public static class ImplPo extends PersistentObject { }
 }

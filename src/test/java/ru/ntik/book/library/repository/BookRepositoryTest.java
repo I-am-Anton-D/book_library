@@ -36,7 +36,7 @@ class BookRepositoryTest {
     @DisplayName("Поищем по id")
     @Test
     void findByIdTest() {
-        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+         BookDefinition bd = bookRepository.findById(1L).orElse(null);
         assertThat(bd).isNotNull();
 
         AssertSqlQueriesCount.assertSelectCount(1);
@@ -91,9 +91,7 @@ class BookRepositoryTest {
 
         assertThat(bd.getId()).isNotNull();
         assertThat(bd.getCreator()).isNotNull().isPositive();
-        assertThat(bd.getVersion()).isZero();
 
-        //Нет lazy полей. Потом проверить c creator
         AssertSqlQueriesCount.assertInsertCount(1);
         AssertSqlQueriesCount.assertSelectCount(0);
     }
@@ -108,15 +106,13 @@ class BookRepositoryTest {
         bd.setName("New name");
         bd.setPageCount(100);
 
-//      no flush here, no update
+        //no flush here, no update
         bd = bookRepository.save(bd);
         AssertSqlQueriesCount.assertInsertCount(0);
-        assertThat(bd.getVersion()).isEqualTo((short)0);
 
         //here 1 update. save dirty and flush
-        bd = bookRepository.saveAndFlush(bd);
+        bookRepository.saveAndFlush(bd);
         AssertSqlQueriesCount.assertUpdateCount(1);
-        assertThat(bd.getVersion()).isEqualTo((short)1);
     }
 
     @DisplayName("Удаляем объект")
@@ -140,32 +136,25 @@ class BookRepositoryTest {
         BookDefinition bd = bookRepository.findById(3L).orElse(null);
         assertThat(bd).isNotNull();
 
-        short oldVersion = bd.getVersion();
-
         //Start in new tread fon new persistence context
         Thread one = new Thread(this::updateInNewTransaction);
         one.start();
         one.join();
 
-        //Not dirty, no change version
-        assertThat(bd.getVersion()).isEqualTo(oldVersion);
         bd.setName("Cool name");
         bd.setPageCount(1000);
         assertThrows(ObjectOptimisticLockingFailureException.class, () -> bookRepository.saveAndFlush(bd));
     }
 
     @Commit
-    //АККУРАТНО, объект с id = 3 сохранится в ходе тестов и поднимется версия, происходит КОММИТ, не роллбек
+    //АККУРАТНО, объект с id = 3 сохранится в ходе тестов происходит КОММИТ, не роллбек
     void updateInNewTransaction() {
         //Select here
         BookDefinition bd = bookRepository.findById(3L).orElse(null);
         assertThat(bd).isNotNull();
         bd.setName("new version");
-        short currentVersion = bd.getVersion();
 
         //Select here again
-        bd = bookRepository.saveAndFlush(bd);
-        //check update version
-        assertThat(bd.getVersion()).isEqualTo((short)(currentVersion + 1));
+        bookRepository.saveAndFlush(bd);
     }
 }

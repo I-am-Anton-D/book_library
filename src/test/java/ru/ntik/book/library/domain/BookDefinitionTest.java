@@ -150,6 +150,7 @@ class BookDefinitionTest {
         assertThat(bd.toString()).contains("BookDefinition");
     }
 
+    @SuppressWarnings({"EqualsBetweenInconvertibleTypes", "EqualsWithItself"})
     @Test
     void equalsAndHashCode() {
         //Check simple

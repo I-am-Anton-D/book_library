@@ -3,9 +3,8 @@
         xmlns="http://www.ehcache.org/v3"
         xmlns:jsr107="http://www.ehcache.org/v3/jsr107"
         xsi:schemaLocation="
-            http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd
-            http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.0.xsd">
-
+            http://www.ehcache.org/v3 https://www.ehcache.org/schema/ehcache-core-3.0.xsd
+            http://www.ehcache.org/v3/jsr107 https://www.ehcache.org/schema/ehcache-107-ext-3.0.xsd">
     <service>
         <jsr107:defaults enable-management="true" enable-statistics="true"/>
     </service>
@@ -28,6 +27,11 @@
     <cache alias="ru.ntik.book.library.domain.BookDefinition"  uses-template="default">
         <key-type>java.lang.Long</key-type>
         <value-type>ru.ntik.book.library.domain.BookDefinition</value-type>
+    </cache>
+
+    <cache alias="ru.ntik.book.library.domain.Publisher"  uses-template="default">
+        <key-type>java.lang.Long</key-type>
+        <value-type>ru.ntik.book.library.domain.Publisher</value-type>
     </cache>
 
 </config>
