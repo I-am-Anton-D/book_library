@@ -28,9 +28,9 @@ class PersistentObjectTest {
         assertThat(bd.getName()).isEqualTo(BOOK_NAME);
         assertThat(bd.getDescription()).isEqualTo(BOOK_DESC);
         assertThat(bd.getCreator()).isEqualTo(CREATOR);
-        assertThat(bd.getReleaseYear()).isEqualTo(RELEASE_YEAR);
-        assertThat(bd.getCoverType()).isEqualTo(COVER_TYPE);
-        assertThat(bd.getIsbn()).isEqualTo(ISBN);
+        assertThat(bd.getPrintInfo().getReleaseYear()).isEqualTo(RELEASE_YEAR);
+        assertThat(bd.getPrintInfo().getCoverType()).isEqualTo(COVER_TYPE);
+        assertThat(bd.getPrintInfo().getIsbn()).isEqualTo(ISBN);
         assertThat(bd.getCreated()).isNull();
     }
 

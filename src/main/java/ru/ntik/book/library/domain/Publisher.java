@@ -6,8 +6,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,6 +20,8 @@ import static ru.ntik.book.library.util.Constants.PUBLISHER_REGION_NAME;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
         region = PUBLISHER_REGION_NAME)
+@OptimisticLocking(type = OptimisticLockType.DIRTY)
+@DynamicUpdate
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 

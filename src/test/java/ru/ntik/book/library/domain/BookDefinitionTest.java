@@ -41,23 +41,23 @@ class BookDefinitionTest {
     void checkReleaseYear() {
         BookDefinition bd = TestUtils.createBookDefinition();
 
-        bd.setReleaseYear(2020);
-        assertThat(bd.getReleaseYear()).isEqualTo(2020);
+        bd.getPrintInfo().setReleaseYear(2020);
+        assertThat(bd.getPrintInfo().getReleaseYear()).isEqualTo(2020);
 
-        bd.setReleaseYear(null);
-        assertThat(bd.getReleaseYear()).isNull();
+        bd.getPrintInfo().setReleaseYear(null);
+        assertThat(bd.getPrintInfo().getReleaseYear()).isNull();
 
-        int min = BookDefinition.RELEASE_YEAR_MIN;
-        int max = BookDefinition.RELEASE_YEAR_MAX;
+        int min = PrintInfo.RELEASE_YEAR_MIN;
+        int max = PrintInfo.RELEASE_YEAR_MAX;
 
-        bd.setReleaseYear(min);
-        assertThat(bd.getReleaseYear()).isEqualTo(min);
+        bd.getPrintInfo().setReleaseYear(min);
+        assertThat(bd.getPrintInfo().getReleaseYear()).isEqualTo(min);
 
-        bd.setReleaseYear(max);
-        assertThat(bd.getReleaseYear()).isEqualTo(max);
+        bd.getPrintInfo().setReleaseYear(max);
+        assertThat(bd.getPrintInfo().getReleaseYear()).isEqualTo(max);
 
-        assertThrows(IllegalArgumentException.class, () -> bd.setReleaseYear(1899));
-        assertThrows(IllegalArgumentException.class, () -> bd.setReleaseYear(2041));
+        assertThrows(IllegalArgumentException.class, () -> bd.getPrintInfo().setReleaseYear(1899));
+        assertThrows(IllegalArgumentException.class, () -> bd.getPrintInfo().setReleaseYear(2041));
     }
 
     @DisplayName("Тип обложки должен быть в пределах")
@@ -65,13 +65,13 @@ class BookDefinitionTest {
     void checkCoverType() {
         BookDefinition bd = TestUtils.createBookDefinition();
 
-        bd.setCoverType(null);
-        assertThat(bd.getCoverType()).isNull();
+        bd.getPrintInfo().setCoverType(null);
+        assertThat(bd.getPrintInfo().getCoverType()).isNull();
 
-        assertThrows(IllegalArgumentException.class, () -> bd.setCoverType(""));
+        assertThrows(IllegalArgumentException.class, () -> bd.getPrintInfo().setCoverType(""));
 
-        bd.setCoverType("A");
-        assertThat(bd.getCoverType()).isEqualTo("A");
+        bd.getPrintInfo().setCoverType("A");
+        assertThat(bd.getPrintInfo().getCoverType()).isEqualTo("A");
 
 
         String s63 = "YqVvHpGHiwlpbstMXg2bZbgLw0L0rj0GqMCP4qOmico3LIY6RIGaACJVOKqUh7U";
@@ -82,22 +82,22 @@ class BookDefinitionTest {
         assertThat(s64).hasSize(max);
 
         assertThatCode(() -> {
-            bd.setCoverType(s63);
-            bd.setCoverType(s64);
+            bd.getPrintInfo().setCoverType(s63);
+            bd.getPrintInfo().setCoverType(s64);
         }).doesNotThrowAnyException();
 
-        assertThrows(IllegalArgumentException.class, () -> bd.setCoverType(s65));
+        assertThrows(IllegalArgumentException.class, () -> bd.getPrintInfo().setCoverType(s65));
     }
 
     @DisplayName("ISBN должен быть в прделах")
     @Test
     void checkIsbn() {
         BookDefinition bd = TestUtils.createBookDefinition();
-        bd.setIsbn(null);
-        assertThat(bd.getIsbn()).isNull();
+        bd.getPrintInfo().setIsbn(null);
+        assertThat(bd.getPrintInfo().getIsbn()).isNull();
 
-        int min = BookDefinition.ISBN_MIN_LENGTH;
-        int max = BookDefinition.ISBN_MAX_LENGTH;
+        int min = PrintInfo.ISBN_MIN_LENGTH;
+        int max = PrintInfo.ISBN_MAX_LENGTH;
 
         String s10 = "dBbxemDFfx";
         String s20 = "r1SFz1SMIicTg6aYwNXI";
@@ -106,30 +106,30 @@ class BookDefinitionTest {
         assertThat(s20).hasSize(max);
 
         assertThatCode(() -> {
-            bd.setIsbn(s10);
-            bd.setIsbn(s20);
+            bd.getPrintInfo().setIsbn(s10);
+            bd.getPrintInfo().setIsbn(s20);
         }).doesNotThrowAnyException();
 
-        assertThrows(IllegalArgumentException.class, () -> bd.setIsbn(""));
-        assertThrows(IllegalArgumentException.class, () -> bd.setIsbn("AD"));
-        assertThrows(IllegalArgumentException.class, () -> bd.setIsbn(ISBN + ISBN));
+        assertThrows(IllegalArgumentException.class, () -> bd.getPrintInfo().setIsbn(""));
+        assertThrows(IllegalArgumentException.class, () -> bd.getPrintInfo().setIsbn("AD"));
+        assertThrows(IllegalArgumentException.class, () -> bd.getPrintInfo().setIsbn(ISBN + ISBN));
     }
 
     @DisplayName("Адекватное число страниц")
     @Test
     void checkPageCount() {
         BookDefinition bd = TestUtils.createBookDefinition();
-        assertThat(bd.getPageCount()).isEqualTo(PAGE_COUNT);
+        assertThat(bd.getPrintInfo().getPageCount()).isEqualTo(PAGE_COUNT);
 
-        assertThrows(IllegalArgumentException.class, () -> bd.setPageCount(0));
-        assertThrows(IllegalArgumentException.class, () -> bd.setPageCount(-10));
-        int max = BookDefinition.BOOK_MAX_PAGE_COUNT;
-        assertThrows(IllegalArgumentException.class, ()-> bd.setPageCount(max + 1));
+        assertThrows(IllegalArgumentException.class, () -> bd.getPrintInfo().setPageCount(0));
+        assertThrows(IllegalArgumentException.class, () -> bd.getPrintInfo().setPageCount(-10));
+        int max = PrintInfo.BOOK_MAX_PAGE_COUNT;
+        assertThrows(IllegalArgumentException.class, ()-> bd.getPrintInfo().setPageCount(max + 1));
 
         assertThatCode(() -> {
-            bd.setPageCount(1);
-            bd.setPageCount(100);
-            bd.setPageCount(max);
+            bd.getPrintInfo().setPageCount(1);
+            bd.getPrintInfo().setPageCount(100);
+            bd.getPrintInfo().setPageCount(max);
 
         }).doesNotThrowAnyException();
     }
@@ -137,10 +137,10 @@ class BookDefinitionTest {
     @Test
     void languageTest() {
         BookDefinition bd = TestUtils.createBookDefinition();
-        assertThat(bd.getLanguage()).isEqualTo(BOOK_LANGUAGE);
+        assertThat(bd.getPrintInfo().getLanguage()).isEqualTo(BOOK_LANGUAGE);
 
-        bd.setLanguage(BookLanguage.ENGLISH);
-        assertThat(bd.getLanguage()).isEqualTo(BookLanguage.ENGLISH);
+        bd.getPrintInfo().setLanguage(BookLanguage.ENGLISH);
+        assertThat(bd.getPrintInfo().getLanguage()).isEqualTo(BookLanguage.ENGLISH);
     }
 
 

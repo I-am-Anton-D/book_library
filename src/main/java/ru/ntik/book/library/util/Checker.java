@@ -27,7 +27,6 @@ public class Checker {
         return n;
     }
 
-
     private static void checkLimits(int min, int max) {
         if (min >= max) {
             throw new IllegalArgumentException("min >= max");

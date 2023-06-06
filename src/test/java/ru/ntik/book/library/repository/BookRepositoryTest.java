@@ -104,7 +104,7 @@ class BookRepositoryTest {
         AssertSqlQueriesCount.assertSelectCount(1);
 
         bd.setName("New name");
-        bd.setPageCount(100);
+        bd.getPrintInfo().setPageCount(100);
 
         //no flush here, no update
         bd = bookRepository.save(bd);
@@ -142,7 +142,7 @@ class BookRepositoryTest {
         one.join();
 
         bd.setName("Cool name");
-        bd.setPageCount(1000);
+        bd.getPrintInfo().setPageCount(1000);
         assertThrows(ObjectOptimisticLockingFailureException.class, () -> bookRepository.saveAndFlush(bd));
     }
 

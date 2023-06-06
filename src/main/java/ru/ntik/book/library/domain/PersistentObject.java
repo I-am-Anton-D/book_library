@@ -3,7 +3,7 @@ package ru.ntik.book.library.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.ntik.book.library.util.Checker;
 
 import java.time.Instant;
@@ -12,9 +12,6 @@ import java.util.Objects;
 import static ru.ntik.book.library.util.Constants.*;
 
 @MappedSuperclass
-@OptimisticLocking(type = OptimisticLockType.DIRTY)
-@DynamicUpdate
-@BatchSize(size = PO_BATCH_SIZE)
 
 @Getter
 @NoArgsConstructor
