@@ -16,7 +16,7 @@ import static ru.ntik.book.library.util.Constants.*;
 @Getter
 @NoArgsConstructor
 
-abstract class PersistentObject {
+public abstract class PersistentObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

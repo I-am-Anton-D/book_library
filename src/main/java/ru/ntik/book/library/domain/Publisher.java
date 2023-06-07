@@ -10,7 +10,6 @@ import org.hibernate.annotations.*;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import static ru.ntik.book.library.util.Constants.PUBLISHER_REGION_NAME;
@@ -28,14 +27,7 @@ import static ru.ntik.book.library.util.Constants.PUBLISHER_REGION_NAME;
 public class Publisher extends PersistentObject {
 
     @OneToMany(mappedBy = "publisher", fetch = FetchType.LAZY)
-    private Set<BookDefinition> bookDefinitions = new HashSet<>();
-
-    public Publisher(String name, String description, Long creator, Set<BookDefinition> bookDefinitions) {
-        super(name, description, creator);
-
-        Objects.requireNonNull(bookDefinitions);
-        this.bookDefinitions = bookDefinitions;
-    }
+    private final Set<BookDefinition> bookDefinitions = new HashSet<>();
 
     public Publisher(String name, String description, Long creator) {
         super(name, description, creator);
@@ -43,26 +35,5 @@ public class Publisher extends PersistentObject {
 
     public Set<BookDefinition> getBookDefinitions() {
         return Collections.unmodifiableSet(bookDefinitions);
-    }
-
-    public void setBookDefinitions(Set<BookDefinition> bookDefinitions) {
-        Objects.requireNonNull(bookDefinitions);
-
-        this.bookDefinitions.clear();
-        this.bookDefinitions.addAll(bookDefinitions);
-    }
-
-    public boolean addBookDefinition(BookDefinition bookDefinition) {
-        Objects.requireNonNull(bookDefinition);
-        return bookDefinitions.add(bookDefinition);
-    }
-
-    public boolean removeBookDefinition(BookDefinition bookDefinition) {
-        Objects.requireNonNull(bookDefinition);
-        return bookDefinitions.remove(bookDefinition);
-    }
-
-    public void cleanBookDefinitions() {
-        bookDefinitions.clear();
     }
 }
