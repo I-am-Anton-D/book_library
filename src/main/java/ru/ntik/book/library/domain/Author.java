@@ -10,32 +10,29 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static ru.ntik.book.library.domain.Publisher.GRAPH_FETCH_ALL;
-import static ru.ntik.book.library.util.Constants.PUBLISHER_REGION_NAME;
+import static ru.ntik.book.library.domain.Author.GRAPH_FETCH_ALL;
+import static ru.ntik.book.library.util.Constants.AUTHOR_REGION_NAME;
 
 @Entity
 
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
-        region = PUBLISHER_REGION_NAME)
+        region = AUTHOR_REGION_NAME)
+
 @OptimisticLocking(type = OptimisticLockType.DIRTY)
 @DynamicUpdate
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-
 @NamedEntityGraph(name = GRAPH_FETCH_ALL, includeAllAttributes = true)
 
-public class Publisher extends PersistentObject {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 
-    @OneToMany(mappedBy = "publisher", fetch = FetchType.LAZY)
-    private final Set<BookDefinition> bookDefinitions = new HashSet<>();
+public class Author extends PersistentObject{
 
-    public Publisher(String name, String description, Long creator) {
-        super(name, description, creator);
-    }
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
+    private Set<BookDefinition> bookDefinitions = new HashSet<>();
 
     public Set<BookDefinition> getBookDefinitions() {
         return Collections.unmodifiableSet(bookDefinitions);
     }
 
-    public static final String GRAPH_FETCH_ALL = "Publisher.FETCH_ALL";
+    public static final String GRAPH_FETCH_ALL = "Author.FETCH_ALL";
 }

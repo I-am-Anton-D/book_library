@@ -125,6 +125,7 @@
                     <excludes>
                         <exclude>**/config/*</exclude>
                         <exclude>**/LibraryApplication.class</exclude>
+                        <exclude>**/ForeignKeyNameStrategy.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

@@ -28,6 +28,7 @@ public class PrintInfo {
     private Integer pageCount;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "language", length = 20)
     private BookLanguage language;
 
     protected PrintInfo() {}

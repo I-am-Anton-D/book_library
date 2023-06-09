@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ntik.book.library.domain.Author;
 import ru.ntik.book.library.domain.BookDefinition;
-import ru.ntik.book.library.domain.Publisher;
 
 import java.util.Set;
 
@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @ActiveProfiles("h2")
 @Transactional
-class PublisherRepositoryTest {
+class AuthorRepositoryTest {
 
     @Autowired
-    PublisherRepository publisherRepository;
+    AuthorRepository authorRepository;
 
     @BeforeEach
     void resetSqlCount() {
@@ -32,12 +32,14 @@ class PublisherRepositoryTest {
     @DisplayName("Тест lazy fetch для Book Definition")
     @Test
     void lazyFetchForBookDefinition() {
-        Publisher publisher = publisherRepository.findById(1L).orElse(null);
-        assertThat(publisher).isNotNull();
+        Author author = authorRepository.findById(1L).orElse(null);
+        assertThat(author).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
 
-        final Set<BookDefinition> bookDefinitions = publisher.getBookDefinitions();
+        final Set<BookDefinition> bookDefinitions = author.getBookDefinitions();
         AssertSqlQueriesCount.assertSelectCount(1);
+
+        assertThrows(UnsupportedOperationException.class, () -> bookDefinitions.add(null));
 
         for (BookDefinition bd : bookDefinitions) {
             assertThat(bd.getName()).isNotNull();
@@ -46,28 +48,14 @@ class PublisherRepositoryTest {
         AssertSqlQueriesCount.assertSelectCount(2);
     }
 
-    @DisplayName("Не модифицируемая коллекция")
-    @Test
-    void unmodifiedCollection() {
-        Publisher publisher = publisherRepository.findById(1L).orElse(null);
-        assertThat(publisher).isNotNull();
-        AssertSqlQueriesCount.assertSelectCount(1);
-
-        final Set<BookDefinition> bookDefinitions = publisher.getBookDefinitions();
-        assertThrows(UnsupportedOperationException.class, () -> bookDefinitions.add(null));
-
-        assertThat(bookDefinitions).isNotEmpty();
-        AssertSqlQueriesCount.assertSelectCount(2);
-    }
-
     @DisplayName("Забираем книги в eager c помощью графа")
     @Test
     void eagerFetchBooks() {
-        Publisher publisher = publisherRepository.fetchById(1L).orElse(null);
-        assertThat(publisher).isNotNull();
+        Author author = authorRepository.fetchById(1L).orElse(null);
+        assertThat(author).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
 
-        final Set<BookDefinition> bookDefinitions = publisher.getBookDefinitions();
+        final Set<BookDefinition> bookDefinitions = author.getBookDefinitions();
         AssertSqlQueriesCount.assertSelectCount(1);
 
         for (BookDefinition bd : bookDefinitions) {

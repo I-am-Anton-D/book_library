@@ -9,9 +9,10 @@ public class Constants {
     public static final int PO_MIN_DESC_LENGTH = 5;
     public static final int PO_MAX_DESC_LENGTH = 4095;
     public static final int PO_BATCH_SIZE = 20;
-
     public static final String BOOK_DEFINITION_REGION_NAME = "ru.ntik.book.library.domain.BookDefinition";
     public static final String PUBLISHER_REGION_NAME = "ru.ntik.book.library.domain.Publisher";
+    public static final String AUTHOR_REGION_NAME = "ru.ntik.book.library.domain.Author";
+
 
     private Constants() {
     }

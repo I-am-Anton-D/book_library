@@ -1,7 +1,6 @@
 package ru.ntik.book.library.domain;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,6 +8,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
 import ru.ntik.book.library.domain.enums.BookLanguage;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static ru.ntik.book.library.util.Constants.BOOK_DEFINITION_REGION_NAME;
 import static ru.ntik.book.library.util.Constants.PO_BATCH_SIZE;
@@ -31,9 +33,10 @@ public class BookDefinition extends PersistentObject {
     private PrintInfo printInfo;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "publisher_id", foreignKey = @ForeignKey(name = "pub_id_key"))
     private Publisher publisher;
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private final Collection<Author> authors = new ArrayList<>();
 
     public BookDefinition(String name, String description, Long creator, Integer releaseYear,
                           String coverType, String isbn, Integer pageCount, BookLanguage language) {

@@ -34,4 +34,9 @@
         <value-type>ru.ntik.book.library.domain.Publisher</value-type>
     </cache>
 
+    <cache alias="ru.ntik.book.library.domain.Author" uses-template="default">
+        <key-type>java.lang.Long</key-type>
+        <value-type> ru.ntik.book.library.domain.Author</value-type>
+    </cache>
+
 </config>
