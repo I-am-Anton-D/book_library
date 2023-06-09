@@ -21,3 +21,7 @@ INSERT INTO public.book_to_author (authors_id, book_definitions_id) VALUES (2, 1
 INSERT INTO public.book_to_author (authors_id, book_definitions_id) VALUES (3, 1);
 INSERT INTO public.book_to_author (authors_id, book_definitions_id) VALUES (1, 2);
 INSERT INTO public.book_to_author (authors_id, book_definitions_id) VALUES (1, 3);
+
+INSERT INTO public.book_to_book (book_one, book_two) VALUES (1, 2);
+INSERT INTO public.book_to_book (book_one, book_two) VALUES (1, 3);
+INSERT INTO public.book_to_book (book_one, book_two) VALUES (3, 4);

@@ -103,4 +103,17 @@ class BookRepositoryFetchTest {
         bookRepository.flush();
         AssertSqlQueriesCount.assertUpdateCount(1);
     }
+
+    @DisplayName("Достаем линки")
+    @Test
+    void fetchLinks() {
+        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+        assertThat(bd).isNotNull();
+        AssertSqlQueriesCount.assertSelectCount(1);
+
+        Collection<BookDefinition> links = bd.getLinks();
+
+        assertThat(links).isNotEmpty();
+        AssertSqlQueriesCount.assertSelectCount(2);
+    }
 }

@@ -40,7 +40,7 @@ public class BookDefinition extends PersistentObject {
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private final Collection<Author> authors = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "book_to_book",
             joinColumns = @JoinColumn(name = "book_one", foreignKey =  @ForeignKey(name = "fk_book_one")),
             inverseJoinColumns = @JoinColumn(name = "book_two"), foreignKey =  @ForeignKey(name = "fk_book_two"))
