@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ntik.book.library.domain.Author;
 import ru.ntik.book.library.domain.BookDefinition;
 import ru.ntik.book.library.domain.Publisher;
+
+import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,9 +33,9 @@ class BookRepositoryFetchTest {
         AssertSqlQueriesCount.reset();
     }
 
-    @DisplayName("Вытаскиваем издательство Lazy")
+    @DisplayName("Все Lazy")
     @Test
-    void lazyFetchPublisher() {
+    void lazyFetch() {
         BookDefinition bd = bookRepository.findById(1L).orElse(null);
         assertThat(bd).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
@@ -40,12 +43,15 @@ class BookRepositoryFetchTest {
         //No Lazy load here
         Publisher publisher = bd.getPublisher();
         assertThat(publisher).isNotNull();
+        Collection<Author> authors = bd.getAuthors();
+
         AssertSqlQueriesCount.assertSelectCount(1);
 
         //Lazy load here
         String name = publisher .getName();
         assertThat(name).isNotNull();
-        AssertSqlQueriesCount.assertSelectCount(2);
+        assertThat(authors).isNotEmpty();
+        AssertSqlQueriesCount.assertSelectCount(3);
     }
 
     @DisplayName("Каскадный персист проверяем")
@@ -59,10 +65,22 @@ class BookRepositoryFetchTest {
         bd.setPublisher(publisher);
 
         bd = bookRepository.save(bd);
+        //Insert publisher
         AssertSqlQueriesCount.assertInsertCount(1);
         AssertSqlQueriesCount.assertUpdateCount(0);
 
+        Author author = new Author("New Name", null, 10L);
+        bd.getAuthors().add(author);
+        bd = bookRepository.save(bd);
+
+        //Insert Author
+        AssertSqlQueriesCount.assertInsertCount(2);
+        AssertSqlQueriesCount.assertUpdateCount(0);
+
         bookRepository.flush();
+
+        //Insert to Join table and udpate book
+        AssertSqlQueriesCount.assertInsertCount(3);
         AssertSqlQueriesCount.assertUpdateCount(1);
 
         assertThat(bd.getPublisher().getId()).isNotNull();

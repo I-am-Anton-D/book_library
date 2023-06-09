@@ -89,6 +89,8 @@ public abstract class PersistentObject {
             "VARCHAR(" + PO_MAX_NAME_LENGTH + ") CHECK (length(" + COLUMN_NAME + ") >= " + PO_MIN_NAME_LENGTH + ") NOT NULL";
     private static final String COLUMN_DESCRIPTION_DEFINITION =
             "VARCHAR(" + PO_MAX_DESC_LENGTH + ") CHECK (length(" + COLUMN_DESCRIPTION_NAME + ") >= " + PO_MIN_DESC_LENGTH + ")";
-    private static final String COLUMN_CREATED_DEFINITION =
-            "TIMESTAMP(6) WITHOUT TIME ZONE CHECK(current_timestamp >= " + COLUMN_CREATED_NAME + ") NOT NULL";
+
+    // H2 - FAILED HERE - CHECK(current_timestamp >= " + COLUMN_CREATED_NAME + ") ";
+    private static final String COLUMN_CREATED_DEFINITION ="TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL";
+
 }

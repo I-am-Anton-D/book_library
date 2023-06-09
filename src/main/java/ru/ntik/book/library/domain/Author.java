@@ -1,7 +1,6 @@
 package ru.ntik.book.library.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
@@ -23,12 +22,15 @@ import static ru.ntik.book.library.util.Constants.AUTHOR_REGION_NAME;
 @DynamicUpdate
 @NamedEntityGraph(name = GRAPH_FETCH_ALL, includeAllAttributes = true)
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 
 public class Author extends PersistentObject{
-
     @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
-    private Set<BookDefinition> bookDefinitions = new HashSet<>();
+    private final Set<BookDefinition> bookDefinitions = new HashSet<>();
+
+    public Author(String name, String description, Long creator) {
+        super(name, description, creator);
+    }
 
     public Set<BookDefinition> getBookDefinitions() {
         return Collections.unmodifiableSet(bookDefinitions);

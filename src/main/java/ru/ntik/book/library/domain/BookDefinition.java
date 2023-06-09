@@ -1,6 +1,7 @@
 package ru.ntik.book.library.domain;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,8 +36,15 @@ public class BookDefinition extends PersistentObject {
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Publisher publisher;
 
+    @JoinTable(name = "book_to_author")
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private final Collection<Author> authors = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "book_to_book",
+            joinColumns = @JoinColumn(name = "book_one", foreignKey =  @ForeignKey(name = "fk_book_one")),
+            inverseJoinColumns = @JoinColumn(name = "book_two"), foreignKey =  @ForeignKey(name = "fk_book_two"))
+    private final Collection<BookDefinition> links = new ArrayList<>();
 
     public BookDefinition(String name, String description, Long creator, Integer releaseYear,
                           String coverType, String isbn, Integer pageCount, BookLanguage language) {

@@ -104,7 +104,7 @@ class BookRepositoryCacheTest {
     void deleteObject() {
         bookRepository.deleteById(1L);
         bookRepository.flush();
-        AssertSqlQueriesCount.assertDeleteCount(2);
+        AssertSqlQueriesCount.assertDeleteCount(3);
 
         BookDefinition bd = bookRepository.findById(1L).orElse(null);
         assertThat(bd).isNull();

@@ -10,7 +10,7 @@ public class ForeignKeyNameStrategy extends ImplicitNamingStrategyComponentPathI
     public Identifier determineForeignKeyName(ImplicitForeignKeyNameSource source) {
         Identifier userProvidedIdentifier = source.getUserProvidedIdentifier();
         return userProvidedIdentifier != null ? userProvidedIdentifier :
-                toIdentifier("fk_" + source.getReferencedTableName(),
+                toIdentifier("fk_" + source.getTableName() + "_" + source.getReferencedTableName(),
                 source.getBuildingContext()
         );
     }

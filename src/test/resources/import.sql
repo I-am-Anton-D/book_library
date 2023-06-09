@@ -16,8 +16,8 @@ INSERT INTO public.book_definition (page_count, release_year,  created, creator,
 INSERT INTO public.book_definition (page_count, release_year, created, creator, id, cover_type, description, isbn, language, name) VALUES (50, 2005, '2023-06-04 14:41:17.221314', 10, default, 'paperback', 'BOOK_DESCRIPTION 3 ', '978-5-4461-0512-4', 'RUSSIAN', 'BOOK_4');
 INSERT INTO public.book_definition (page_count, release_year, created, creator, id, cover_type, description, isbn, language, name) VALUES (2000, 2006, '2023-06-04 14:41:18.221314', 10, default, 'paperback', 'BOOK_DESCRIPTION', '978-5-4461-0512-5', 'RUSSIAN', 'BOOK_5');
 
-INSERT INTO public.book_definition_author (authors_id, book_definitions_id) VALUES (1, 1);
-INSERT INTO public.book_definition_author (authors_id, book_definitions_id) VALUES (2, 1);
-INSERT INTO public.book_definition_author (authors_id, book_definitions_id) VALUES (3, 1);
-INSERT INTO public.book_definition_author (authors_id, book_definitions_id) VALUES (1, 2);
-INSERT INTO public.book_definition_author (authors_id, book_definitions_id) VALUES (1, 3);
+INSERT INTO public.book_to_author (authors_id, book_definitions_id) VALUES (1, 1);
+INSERT INTO public.book_to_author (authors_id, book_definitions_id) VALUES (2, 1);
+INSERT INTO public.book_to_author (authors_id, book_definitions_id) VALUES (3, 1);
+INSERT INTO public.book_to_author (authors_id, book_definitions_id) VALUES (1, 2);
+INSERT INTO public.book_to_author (authors_id, book_definitions_id) VALUES (1, 3);
