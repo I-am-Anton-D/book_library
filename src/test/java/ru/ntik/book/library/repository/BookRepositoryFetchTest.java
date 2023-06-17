@@ -13,6 +13,7 @@ import ru.ntik.book.library.domain.BookDefinition;
 import ru.ntik.book.library.domain.Publisher;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -90,6 +91,27 @@ class BookRepositoryFetchTest {
         assertThat(bd.getPublisher().getId()).isNotNull();
         Publisher saved = publisherRepository.findById(bd.getPublisher().getId()).orElse(null);
         assertThat(saved).isNotNull();
+    }
+
+    @DisplayName("Попытка добавить автора повторно")
+    @Test
+    void duplicateAuthor() {
+        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+        assertThat(bd).isNotNull();
+        assertThat(bd.getAuthors()).isNotEmpty();
+        AssertSqlQueriesCount.assertSelectCount(2);
+
+        Iterator<Author> iterator = bd.getAuthors().iterator();
+        Author exist = iterator.next();
+
+        Author duplicate = new Author(exist.getName(), null, 10L);
+        boolean added = bd.getAuthors().add(duplicate);
+
+        assertThat(added).isFalse();
+        bookRepository.save(bd);
+
+        //Nothing to save
+        AssertSqlQueriesCount.assertUpdateCount(0);
     }
 
 

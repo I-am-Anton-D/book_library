@@ -41,4 +41,18 @@ public class Publisher extends PersistentObject {
     }
 
     public static final String GRAPH_FETCH_ALL = "Publisher.FETCH_ALL";
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Publisher that = (Publisher) o;
+
+        return getName().equals(that.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
 }

@@ -41,5 +41,19 @@ public class Author extends PersistentObject{
         return Collections.unmodifiableSet(bookDefinitions);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Author that = (Author) o;
+
+        return getName().equals(that.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+
     public static final String GRAPH_FETCH_ALL = "Author.FETCH_ALL";
 }

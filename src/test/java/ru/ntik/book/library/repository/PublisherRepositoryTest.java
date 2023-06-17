@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.BookDefinition;
@@ -74,5 +75,24 @@ class PublisherRepositoryTest {
             assertThat(bd.getName()).isNotNull();
         }
         AssertSqlQueriesCount.assertSelectCount(1);
+    }
+
+    @DisplayName("Пробуем сохранить с тем же именем")
+    @Test
+    void testUniqNameAndEquals() {
+        Publisher publisher = publisherRepository.fetchById(10L).orElse(null);
+        assertThat(publisher).isNotNull().isNotEqualTo("SOME");
+        assertThat(publisher.equals(null)).isFalse();
+
+        Publisher another = publisherRepository.findById(11L).orElse(null);
+        assertThat(another).isNotNull().isNotEqualTo(publisher);
+        assertThat(another.hashCode()).isNotEqualTo(publisher.hashCode());
+
+        Publisher same = publisherRepository.findById(10L).orElse(null);
+        assertThat(same).isNotNull().isEqualTo(publisher).hasSameHashCodeAs(publisher.hashCode());
+
+        Publisher duplicatePublisher = new Publisher(publisher.getName(), null, 10L);
+        publisherRepository.save(duplicatePublisher);
+        assertThrows(DataIntegrityViolationException.class, () -> publisherRepository.flush());
     }
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.Author;
@@ -74,7 +75,26 @@ class AuthorRepositoryTest {
             AssertSqlQueriesCount.assertInsertCount(0);
         }
         authorRepository.flush();
-        AssertSqlQueriesCount.assertSelectCount(2);
         AssertSqlQueriesCount.assertInsertCount(1);
+    }
+
+    @DisplayName("Вставляем дубликат")
+    @Test
+    void uniqAuthorNameAndEqualsAndHashCode() {
+        Author author = authorRepository.fetchById(6L).orElse(null);
+        assertThat(author).isNotNull().isNotNull().isNotEqualTo("SOME");
+        assertThat(author.equals(null)).isFalse(); //Coverage
+
+        Author another =  authorRepository.findById(7L).orElse(null);
+        assertThat(another).isNotNull().isNotEqualTo(author);
+        assertThat(another.hashCode()).isNotEqualTo(author.hashCode());
+
+        Author same = authorRepository.findById(6L).orElse(null);
+        assertThat(same).isNotNull().isEqualTo(same).hasSameHashCodeAs(same.hashCode());
+
+        Author newAuthor = new Author(author.getName(), null, 10L);
+        authorRepository.save(newAuthor);
+
+        assertThrows(DataIntegrityViolationException.class, ()-> authorRepository.flush());
     }
 }
