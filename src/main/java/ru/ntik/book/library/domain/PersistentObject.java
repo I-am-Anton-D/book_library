@@ -12,14 +12,14 @@ import java.util.Objects;
 import static ru.ntik.book.library.util.Constants.*;
 
 @MappedSuperclass
+@SequenceGenerator(name = ID_GENERATOR, sequenceName = "po_seq", initialValue = 50)
 
 @Getter
 @NoArgsConstructor
 
 public abstract class PersistentObject {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = ID_GENERATOR)
     private Long id;
 
     @Column(name = COLUMN_NAME, columnDefinition = COLUMN_NAME_DEFINITION)

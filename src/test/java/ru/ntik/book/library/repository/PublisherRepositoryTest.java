@@ -32,7 +32,7 @@ class PublisherRepositoryTest {
     @DisplayName("Тест lazy fetch для Book Definition")
     @Test
     void lazyFetchForBookDefinition() {
-        Publisher publisher = publisherRepository.findById(1L).orElse(null);
+        Publisher publisher = publisherRepository.findById(10L).orElse(null);
         assertThat(publisher).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
 
@@ -49,7 +49,7 @@ class PublisherRepositoryTest {
     @DisplayName("Не модифицируемая коллекция")
     @Test
     void unmodifiedCollection() {
-        Publisher publisher = publisherRepository.findById(1L).orElse(null);
+        Publisher publisher = publisherRepository.findById(10L).orElse(null);
         assertThat(publisher).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
 
@@ -63,7 +63,7 @@ class PublisherRepositoryTest {
     @DisplayName("Забираем книги в eager c помощью графа")
     @Test
     void eagerFetchBooks() {
-        Publisher publisher = publisherRepository.fetchById(1L).orElse(null);
+        Publisher publisher = publisherRepository.fetchById(10L).orElse(null);
         assertThat(publisher).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
 

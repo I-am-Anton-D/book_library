@@ -32,7 +32,7 @@ class AuthorRepositoryTest {
     @DisplayName("Тест lazy fetch для Book Definition")
     @Test
     void lazyFetchForBookDefinition() {
-        Author author = authorRepository.findById(1L).orElse(null);
+        Author author = authorRepository.findById(6L).orElse(null);
         assertThat(author).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
 
@@ -51,7 +51,7 @@ class AuthorRepositoryTest {
     @DisplayName("Забираем книги в eager c помощью графа")
     @Test
     void eagerFetchBooks() {
-        Author author = authorRepository.fetchById(1L).orElse(null);
+        Author author = authorRepository.fetchById(6L).orElse(null);
         assertThat(author).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
 
@@ -62,5 +62,19 @@ class AuthorRepositoryTest {
             assertThat(bd.getName()).isNotNull();
         }
         AssertSqlQueriesCount.assertSelectCount(1);
+    }
+
+    @DisplayName("Проверяем batch на insert")
+    @Test
+    void batchUpdateTest() {
+
+        for (int i = 0; i < 5; i++) {
+            Author author = new Author("Name " + i, null, 10L);
+            authorRepository.save(author);
+            AssertSqlQueriesCount.assertInsertCount(0);
+        }
+        authorRepository.flush();
+        AssertSqlQueriesCount.assertSelectCount(2);
+        AssertSqlQueriesCount.assertInsertCount(1);
     }
 }

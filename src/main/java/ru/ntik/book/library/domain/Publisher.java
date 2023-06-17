@@ -1,5 +1,6 @@
 package ru.ntik.book.library.domain;
 
+import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,15 +15,17 @@ import static ru.ntik.book.library.domain.Publisher.GRAPH_FETCH_ALL;
 import static ru.ntik.book.library.util.Constants.PUBLISHER_REGION_NAME;
 
 @Entity
+@Table(uniqueConstraints =
+    @UniqueConstraint(name = "uniq_publisher_name", columnNames = "name"))
 
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
         region = PUBLISHER_REGION_NAME)
 @OptimisticLocking(type = OptimisticLockType.DIRTY)
 @DynamicUpdate
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-
 @NamedEntityGraph(name = GRAPH_FETCH_ALL, includeAllAttributes = true)
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 public class Publisher extends PersistentObject {
 

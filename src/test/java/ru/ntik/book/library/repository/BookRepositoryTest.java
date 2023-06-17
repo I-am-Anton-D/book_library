@@ -88,12 +88,13 @@ class BookRepositoryTest {
     void saveEntityTest() {
         BookDefinition bd = TestUtils.createBookDefinition();
         bd = bookRepository.save(bd);
+        bookRepository.flush();
 
         assertThat(bd.getId()).isNotNull();
         assertThat(bd.getCreator()).isNotNull().isPositive();
 
         AssertSqlQueriesCount.assertInsertCount(1);
-        AssertSqlQueriesCount.assertSelectCount(0);
+        AssertSqlQueriesCount.assertSelectCount(1);
     }
 
     @DisplayName("Вносим изменения")

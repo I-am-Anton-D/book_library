@@ -95,7 +95,7 @@ class BookRepositoryCacheTest {
         BookDefinition bd2 = bookRepository.findById(bd.getId()).orElse(null);
         assertThat(bd2).isNotNull();
 
-        AssertSqlQueriesCount.assertSelectCount(0);
+        AssertSqlQueriesCount.assertSelectCount(1);
     }
 
     @DisplayName("Удаляем элемент из базы и кеша")

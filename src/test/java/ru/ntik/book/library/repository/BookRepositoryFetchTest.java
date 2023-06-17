@@ -65,17 +65,21 @@ class BookRepositoryFetchTest {
         bd.setPublisher(publisher);
 
         bd = bookRepository.save(bd);
+        bookRepository.flush();
         //Insert publisher
         AssertSqlQueriesCount.assertInsertCount(1);
-        AssertSqlQueriesCount.assertUpdateCount(0);
+        AssertSqlQueriesCount.assertUpdateCount(1);
+
 
         Author author = new Author("New Name", null, 10L);
         bd.getAuthors().add(author);
         bd = bookRepository.save(bd);
+        bookRepository.flush();
 
         //Insert Author
-        AssertSqlQueriesCount.assertInsertCount(2);
-        AssertSqlQueriesCount.assertUpdateCount(0);
+        AssertSqlQueriesCount.assertInsertCount(3);
+        AssertSqlQueriesCount.assertUpdateCount(1);
+        AssertSqlQueriesCount.assertDeleteCount(0);
 
         bookRepository.flush();
 

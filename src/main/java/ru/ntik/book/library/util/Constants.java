@@ -12,7 +12,7 @@ public class Constants {
     public static final String BOOK_DEFINITION_REGION_NAME = "ru.ntik.book.library.domain.BookDefinition";
     public static final String PUBLISHER_REGION_NAME = "ru.ntik.book.library.domain.Publisher";
     public static final String AUTHOR_REGION_NAME = "ru.ntik.book.library.domain.Author";
-
+    public static final String ID_GENERATOR = "ID_GENERATOR";
 
     private Constants() {
     }
