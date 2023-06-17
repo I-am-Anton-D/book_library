@@ -48,11 +48,11 @@ public abstract class PersistentObject {
 
     public void setName(String name) {
         Objects.requireNonNull(name);
-        this.name = Checker.checkStringLength(name, PO_MIN_NAME_LENGTH, PO_MAX_NAME_LENGTH);
+        this.name = Checker.checkStringLength(name, MIN_STRING_LENGTH, PO_MAX_NAME_LENGTH);
     }
 
     public void setDescription(String description) {
-        this.description = description == null ? null : Checker.checkStringLength(description, PO_MIN_DESC_LENGTH, PO_MAX_DESC_LENGTH);
+        this.description = description == null ? null : Checker.checkStringLength(description, PO_MIN_DESC_LENGTH, LONG_STRING_LENGTH);
     }
 
     public boolean deepEquals(Object o) {
@@ -86,9 +86,9 @@ public abstract class PersistentObject {
     private static final String COLUMN_DESCRIPTION_NAME = "description";
     private static final String COLUMN_CREATED_NAME = "created";
     private static final String COLUMN_NAME_DEFINITION =
-            "VARCHAR(" + PO_MAX_NAME_LENGTH + ") CHECK (length(" + COLUMN_NAME + ") >= " + PO_MIN_NAME_LENGTH + ") NOT NULL";
+            "VARCHAR(" + PO_MAX_NAME_LENGTH + ") CHECK (length(" + COLUMN_NAME + ") >= " + MIN_STRING_LENGTH + ") NOT NULL";
     private static final String COLUMN_DESCRIPTION_DEFINITION =
-            "VARCHAR(" + PO_MAX_DESC_LENGTH + ") CHECK (length(" + COLUMN_DESCRIPTION_NAME + ") >= " + PO_MIN_DESC_LENGTH + ")";
+            "VARCHAR(" + LONG_STRING_LENGTH + ") CHECK (length(" + COLUMN_DESCRIPTION_NAME + ") >= " + PO_MIN_DESC_LENGTH + ")";
 
     // H2 - FAILED HERE - CHECK(current_timestamp >= " + COLUMN_CREATED_NAME + ") ";
     private static final String COLUMN_CREATED_DEFINITION ="TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL";

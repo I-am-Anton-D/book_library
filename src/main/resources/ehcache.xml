@@ -39,4 +39,9 @@
         <value-type> ru.ntik.book.library.domain.Author</value-type>
     </cache>
 
+    <cache alias="ru.ntik.book.library.domain.Review" uses-template="default">
+        <key-type>java.lang.Long</key-type>
+        <value-type> ru.ntik.book.library.domain.Review</value-type>
+    </cache>
+
 </config>
