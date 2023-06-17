@@ -11,6 +11,7 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.BookDefinition;
+import ru.ntik.book.library.domain.enums.BookLanguage;
 import ru.ntik.book.library.testutils.TestUtils;
 
 import java.util.List;
@@ -161,4 +162,23 @@ class BookRepositoryTest {
         //Select here again
         bookRepository.saveAndFlush(bd);
     }
+
+    @DisplayName("Нет каскада на Links")
+    @Test
+    void noCascadeForLinks() {
+        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+        assertThat(bd).isNotNull();
+
+        BookDefinition newBook = new BookDefinition("Some book", null, 10L, 2020, null,null,10, BookLanguage.RUSSIAN);
+        boolean added = bd.getLinks().add(newBook);
+        assertThat(added).isTrue();
+
+        bookRepository.save(bd);
+
+        //Nothing changing, only persisted book can be linked
+        AssertSqlQueriesCount.assertInsertCount(0);
+        AssertSqlQueriesCount.assertUpdateCount(0);
+
+    }
+
 }

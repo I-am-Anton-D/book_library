@@ -142,4 +142,61 @@ class BookRepositoryFetchTest {
         assertThat(links).isNotEmpty();
         AssertSqlQueriesCount.assertSelectCount(2);
     }
+
+    @DisplayName("Lazy load")
+    @Test
+    void lazyLoad() {
+        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+        assertThat(bd).isNotNull();
+        AssertSqlQueriesCount.assertSelectCount(1);
+
+        Publisher pub = bd.getPublisher();
+        assertThat(pub.getName()).isNotNull();
+        AssertSqlQueriesCount.assertSelectCount(2);
+
+        assertThat(bd.getAuthors()).isNotEmpty();
+        AssertSqlQueriesCount.assertSelectCount(3);
+
+        assertThat(bd.getLinks()).isNotEmpty();
+        AssertSqlQueriesCount.assertSelectCount(4);
+    }
+
+    @DisplayName("Eager Load")
+    @Test
+    void eagerLoadByGraph() {
+        //EAGER load
+        BookDefinition eager = bookRepository.fetchById(1L).orElse(null);
+        AssertSqlQueriesCount.assertSelectCount(1);
+        assertThat(eager).isNotNull();
+
+        assertThat(eager.getPublisher().getName()).isNotNull();
+        assertThat(eager.getAuthors()).isNotEmpty();
+        assertThat(eager.getLinks()).isNotEmpty();
+        AssertSqlQueriesCount.assertSelectCount(1);
+    }
+
+    @DisplayName("Попытка добавить дубликат линка на книгу")
+    @Test
+    void duplicateLink() {
+        BookDefinition bd = bookRepository.fetchById(1L).orElse(null);;
+        AssertSqlQueriesCount.assertSelectCount(1);
+        assertThat(bd).isNotNull();
+        assertThat(bd.getLinks()).isNotEmpty();
+
+        Iterator<BookDefinition> iterator = bd.getLinks().iterator();
+        BookDefinition linked = iterator.next();
+
+        boolean added = bd.getLinks().add(linked);
+        assertThat(added).isFalse();
+        bookRepository.flush();
+
+        //Get From DB
+        BookDefinition fromDb = bookRepository.findById(linked.getId()).orElse(null);
+        assertThat(fromDb).isNotNull();
+        //AssertSqlQueriesCount.assertSelectCount(2);
+
+        added = bd.getLinks().add(fromDb);
+        assertThat(added).isFalse();
+    }
+
 }

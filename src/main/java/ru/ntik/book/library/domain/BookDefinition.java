@@ -14,11 +14,13 @@ import ru.ntik.book.library.domain.enums.BookLanguage;
 import java.util.HashSet;
 import java.util.Set;
 
+import static ru.ntik.book.library.domain.BookDefinition.GRAPH_FETCH_ALL;
 import static ru.ntik.book.library.util.Constants.BOOK_DEFINITION_REGION_NAME;
 import static ru.ntik.book.library.util.Constants.PO_BATCH_SIZE;
 
 @Entity
 @BatchSize(size = PO_BATCH_SIZE)
+@NamedEntityGraph(name = GRAPH_FETCH_ALL, includeAllAttributes = true)
 
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
@@ -62,4 +64,6 @@ public class BookDefinition extends PersistentObject {
     public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
     }
+
+    public static final String GRAPH_FETCH_ALL = "BookDefinition.FETCH_ALL";
 }
