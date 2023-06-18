@@ -27,7 +27,7 @@ import static ru.ntik.book.library.util.Constants.PUBLISHER_REGION_NAME;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
-public class Publisher extends PersistentObject {
+public class Publisher extends NamedObject {
 
     @OneToMany(mappedBy = "publisher", fetch = FetchType.LAZY)
     private final Set<BookDefinition> bookDefinitions = new HashSet<>();

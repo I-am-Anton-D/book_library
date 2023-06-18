@@ -4,9 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -157,42 +154,6 @@ class PersistentObjectTest {
     }
 
     @Test
-    @DisplayName("Проверят deepEquals")
-    void deepEqualsTest() {
-        ImplPo po1 = new ImplPo();
-        ImplPo po2 = new ImplPo();
-
-        assertThat(po1.deepEquals(po2)).isTrue();
-
-        po1.setName("FirstName");
-        po2.setName("SecondName");
-
-        assertThat(po1.deepEquals(po2)).isFalse();
-
-        po1.setName(po2.getName());
-        po1.setDescription("First Description");
-        po2.setDescription("Second Description");
-
-        assertThat(po1.deepEquals(po2)).isFalse();
-
-        po1.setDescription(po2.getDescription());
-        assertThat(po1.deepEquals(po2)).isTrue();
-
-        final Field id = ReflectionUtils.findField(ImplPo.class, "id", Long.class);
-        assert id != null;
-        id.setAccessible(true);
-        ReflectionUtils.setField(id, po1, 10L);
-        ReflectionUtils.setField(id, po2, 10L);
-        assertThat(po1.deepEquals(po2)).isTrue();
-
-        ReflectionUtils.setField(id, po2, 11L);
-        assertThat(po1.deepEquals(po2)).isFalse();
-
-        assertThat(po1.deepEquals(po1)).isTrue();
-        assertThat(po1.deepEquals(String.valueOf(1L))).isFalse();
-    }
-
-    @Test
     @DisplayName("to String test")
     void toStringTest() {
         ImplPo po = new ImplPo();
@@ -200,5 +161,5 @@ class PersistentObjectTest {
         assertThat(po.toString()).contains("ImplPo");
     }
 
-    public static class ImplPo extends PersistentObject { }
+    public static class ImplPo extends NamedObject { }
 }

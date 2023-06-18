@@ -29,7 +29,7 @@ import static ru.ntik.book.library.util.Constants.AUTHOR_REGION_NAME;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
-public class Author extends PersistentObject{
+public class Author extends NamedObject {
     @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
     private final Set<BookDefinition> bookDefinitions = new HashSet<>();
 

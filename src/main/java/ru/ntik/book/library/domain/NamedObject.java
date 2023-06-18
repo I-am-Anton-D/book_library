@@ -1,12 +1,12 @@
 package ru.ntik.book.library.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.SequenceGenerator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import ru.ntik.book.library.util.Checker;
 
-import java.time.Instant;
 import java.util.Objects;
 
 import static ru.ntik.book.library.util.Constants.*;
@@ -17,10 +17,7 @@ import static ru.ntik.book.library.util.Constants.*;
 @Getter
 @NoArgsConstructor
 
-public abstract class PersistentObject {
-    @Id
-    @GeneratedValue(generator = ID_GENERATOR)
-    private Long id;
+public abstract class NamedObject extends StoredObject {
 
     @Column(name = COLUMN_NAME, columnDefinition = COLUMN_NAME_DEFINITION)
     private String name;
@@ -28,22 +25,11 @@ public abstract class PersistentObject {
     @Column(name = COLUMN_DESCRIPTION_NAME, columnDefinition = COLUMN_DESCRIPTION_DEFINITION)
     private String description;
 
-    @Column(nullable = false, updatable = false)
-    private Long creator;
 
-    @Column(name = COLUMN_CREATED_NAME, columnDefinition = COLUMN_CREATED_DEFINITION, updatable = false)
-    @CreationTimestamp
-    private Instant created;
-
-    protected PersistentObject(String name, String description, Long creator) {
+    protected NamedObject(String name, String description, Long creator) {
+        super(creator);
         setName(name);
         setDescription(description);
-        setCreator(creator);
-    }
-
-    private void setCreator(Long creator) {
-        Objects.requireNonNull(creator);
-        this.creator = creator;
     }
 
     public void setName(String name) {
@@ -54,43 +40,15 @@ public abstract class PersistentObject {
     public void setDescription(String description) {
         this.description = description == null ? null : Checker.checkStringLength(description, PO_MIN_DESC_LENGTH, LONG_STRING_LENGTH);
     }
-
-    public boolean deepEquals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PersistentObject that)) return false;
-
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
-                && Objects.equals(description, that.description);
-    }
-
     @Override
     public String toString() {
         return String.format("%s { id=%d, name='%s'}", getClass().getSimpleName(), getId(), getName());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PersistentObject that)) return false;
-
-        return id != null && that.getId() != null
-                && Objects.equals(id, that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
-
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_DESCRIPTION_NAME = "description";
-    private static final String COLUMN_CREATED_NAME = "created";
     private static final String COLUMN_NAME_DEFINITION =
             "VARCHAR(" + PO_MAX_NAME_LENGTH + ") CHECK (length(" + COLUMN_NAME + ") >= " + MIN_STRING_LENGTH + ") NOT NULL";
     private static final String COLUMN_DESCRIPTION_DEFINITION =
             "VARCHAR(" + LONG_STRING_LENGTH + ") CHECK (length(" + COLUMN_DESCRIPTION_NAME + ") >= " + PO_MIN_DESC_LENGTH + ")";
-
-    // H2 - FAILED HERE - CHECK(current_timestamp >= " + COLUMN_CREATED_NAME + ") ";
-    private static final String COLUMN_CREATED_DEFINITION ="TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL";
-
 }

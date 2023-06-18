@@ -32,7 +32,7 @@ import static ru.ntik.book.library.util.Constants.PO_BATCH_SIZE;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
-public class BookDefinition extends PersistentObject {
+public class BookDefinition extends NamedObject {
     @Embedded
     private PrintInfo printInfo;
 
@@ -53,6 +53,8 @@ public class BookDefinition extends PersistentObject {
             indexes = @Index(name = "book_to_book_idx", columnList = "book_one, book_two", unique = true)
     )
     private final Set<BookDefinition> links = new HashSet<>();
+
+
 
     public BookDefinition(String name, String description, Long creator, Integer releaseYear,
                           String coverType, String isbn, Integer pageCount, BookLanguage language) {

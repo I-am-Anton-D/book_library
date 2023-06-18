@@ -65,6 +65,7 @@ public class PrintInfo {
         this.language = language;
     }
 
+
     private static final String COLUMN_RELEASE_YEAR_NAME = "release_year";
     public static final int RELEASE_YEAR_MIN = 1900;
     public static final int RELEASE_YEAR_MAX = 2040;
