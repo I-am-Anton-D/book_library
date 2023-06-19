@@ -34,13 +34,14 @@ public class Review extends StoredObject {
 
     public Review(String text, int rating, long creator, BookDefinition bookDefinition) {
         super(creator);
+        setBookDefinition(bookDefinition);
         setText(text);
         setRating(rating);
-        setBookDefinition(bookDefinition);
     }
 
     public void setRating(int rating) {
         this.rating = Checker.checkIntegerRange(rating, 0, 5);
+        bookDefinition.recalculateRating();
     }
 
     public void setText(String text) {

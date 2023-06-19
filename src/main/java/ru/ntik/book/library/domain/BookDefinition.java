@@ -12,10 +12,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
 import ru.ntik.book.library.domain.enums.BookLanguage;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static ru.ntik.book.library.domain.BookDefinition.GRAPH_FETCH_ALL;
 import static ru.ntik.book.library.util.Constants.BOOK_DEFINITION_REGION_NAME;
@@ -58,9 +55,9 @@ public class BookDefinition extends NamedObject {
     )
     private final Set<BookDefinition> links = new HashSet<>();
 
-    @OneToMany(mappedBy = "bookDefinition", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    @OneToMany(mappedBy = "bookDefinition", cascade = { CascadeType.ALL }, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @OrderBy("created")
+    @OrderBy("created DESC" )
     private final List<Review> reviews = new ArrayList<>();
 
     public BookDefinition(String name, String description, Long creator, Integer releaseYear,
@@ -69,6 +66,38 @@ public class BookDefinition extends NamedObject {
         super(name, description, creator);
         printInfo = new PrintInfo(releaseYear, coverType, isbn, pageCount, language);
         rating = new Rating(0, 0.0);
+    }
+
+    public List<Review> getReviews() {
+        return Collections.unmodifiableList(reviews);
+    }
+
+    public void addReview(Review review) {
+        Objects.requireNonNull(review);
+        reviews.add(review);
+
+        if (review.getRating() != 0) recalculateRating();
+    }
+
+    public boolean removeReview(Review review) {
+        Objects.requireNonNull(review);
+        boolean deleted = reviews.remove(review);
+        if (deleted && review.getRating() != 0) recalculateRating();
+
+        return deleted;
+    }
+
+    public void recalculateRating() {
+        if (reviews.isEmpty()) {
+            rating.resetToZero();
+        } else {
+            List<Review> withRating = reviews.stream().filter(r -> r.getRating() != 0).toList();
+            int count = withRating.size();
+            double avg = withRating.stream().mapToInt(Review::getRating).average().orElse(0);
+
+            rating.setCommonRating(avg);
+            rating.setVoteCount(count);
+        }
     }
 
     public void setPublisher(Publisher publisher) {

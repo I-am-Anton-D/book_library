@@ -40,6 +40,8 @@ class ReviewRatingTest {
         AssertSqlQueriesCount.assertSelectCount(1);
 
         List<Review> reviews = bd.getReviews();
+
+        assertThrows(UnsupportedOperationException.class, () -> reviews.add(null));
         AssertSqlQueriesCount.assertSelectCount(1);
 
         assertThat(reviews).isNotEmpty();
@@ -72,6 +74,147 @@ class ReviewRatingTest {
 
         assertThrows(IllegalArgumentException.class, ()-> rating.setVoteCount(-2));
         assertThatCode(()-> rating.setVoteCount(0)).doesNotThrowAnyException();
+    }
 
+    @DisplayName("Reset to zero")
+    @Test
+    void resetToZero() {
+        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+        assertThat(bd).isNotNull();
+        Rating rating = bd.getRating();
+        rating.resetToZero();
+
+        assertThat(rating.getCommonRating()).isEqualTo(0.0);
+        assertThat(rating.getVoteCount()).isZero();
+    }
+
+    @DisplayName("Update review")
+    @Test
+    void updateReview() {
+        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+        assertThat(bd).isNotNull();
+        double beforeRating = bd.getRating().getCommonRating();
+
+        List<Review> reviews = bd.getReviews();
+        assertThat(reviews).isNotEmpty();
+
+        Review review = reviews.get(0);
+
+        review.setText("New Text");
+        review.setRating(5);
+
+
+        bookRepository.save(bd);
+        bookRepository.flush();
+        AssertSqlQueriesCount.assertUpdateCount(2);
+
+        BookDefinition fromDb = bookRepository.findById(1L).orElse(null);
+        assertThat(fromDb).isNotNull();
+        assertThat(fromDb.getRating().getVoteCount()).isEqualTo(3);
+        assertThat(fromDb.getRating().getCommonRating()).isNotEqualTo(beforeRating);
+    }
+
+
+    @DisplayName("Add review")
+    @Test
+    void addNewReview() {
+        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+        assertThat(bd).isNotNull();
+        double beforeRating = bd.getRating().getCommonRating();
+        int beforeCount = bd.getRating().getVoteCount();
+
+        Review withoutRating = new Review("New Review", 0,10L, bd);
+        bd.addReview(withoutRating);
+        bookRepository.save(bd);
+        bookRepository.flush();
+        AssertSqlQueriesCount.assertInsertCount(1);
+        AssertSqlQueriesCount.assertUpdateCount(0);
+        AssertSqlQueriesCount.reset();
+
+        BookDefinition fromDb = bookRepository.findById(1L).orElse(null);
+        assertThat(fromDb).isNotNull();
+
+        assertThat(fromDb.getRating().getCommonRating()).isEqualTo(beforeRating);
+        assertThat(fromDb.getRating().getVoteCount()).isEqualTo(beforeCount);
+
+
+        Review withRating = new Review("New Review", 5, 10L, fromDb);
+        fromDb.addReview(withRating);
+        fromDb = bookRepository.save(bd);
+        bookRepository.flush();
+        AssertSqlQueriesCount.assertInsertCount(1);
+        AssertSqlQueriesCount.assertUpdateCount(1);
+
+        assertThat(fromDb.getRating().getCommonRating()).isNotEqualTo(beforeRating).isGreaterThan(beforeRating);
+        assertThat(fromDb.getRating().getVoteCount()).isNotEqualTo(beforeCount).isEqualTo(beforeCount + 1);
+    }
+
+    @DisplayName("Remove review")
+    @Test
+    void removeReview() {
+        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+        assertThat(bd).isNotNull();
+        double beforeRating = bd.getRating().getCommonRating();
+        int beforeCount = bd.getRating().getVoteCount();
+
+        Review withoutRating = new Review("New Review Without Rating", 0,10L, bd);
+        bd.addReview(withoutRating);
+        bookRepository.save(bd);
+        bookRepository.flush();
+
+
+        bd = bookRepository.findById(1L).orElse(null);
+        assertThat(bd).isNotNull();
+        assertThat(bd.getReviews()).isNotEmpty();
+
+        //Oder test to
+        Review savedBefore = bd.getReviews().stream().filter(r->r.getText().equals("New Review Without Rating")).findFirst().orElse(null);
+        assertThat(savedBefore).isNotNull();
+
+        bd.removeReview(savedBefore);
+        bd = bookRepository.save(bd);
+        bookRepository.flush();
+        AssertSqlQueriesCount.assertDeleteCount(1);
+        AssertSqlQueriesCount.assertUpdateCount(0);
+
+        assertThat(bd.getRating().getCommonRating()).isEqualTo(beforeRating);
+        assertThat(bd.getRating().getVoteCount()).isEqualTo(beforeCount);
+
+        Review existReview = bd.getReviews().get(0);
+        bd.removeReview(existReview);
+        bookRepository.save(bd);
+        bookRepository.flush();
+        AssertSqlQueriesCount.assertDeleteCount(2);
+        AssertSqlQueriesCount.assertUpdateCount(1);
+
+        BookDefinition fromDb =  bookRepository.findById(1L).orElse(null);
+        assertThat(fromDb).isNotNull();
+        assertThat(fromDb.getRating().getCommonRating()).isNotEqualTo(beforeRating);
+        assertThat(fromDb.getRating().getVoteCount()).isEqualTo(beforeCount - 1);
+    }
+
+    @DisplayName("Remove all reviews")
+    @Test
+    void removeAll() {
+        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+        assertThat(bd).isNotNull();
+
+        while (!bd.getReviews().isEmpty()) {
+            Review review = bd.getReviews().get(0);
+            bd.removeReview(review);
+        }
+
+        assertThat(bd.getReviews()).isEmpty();
+        assertThat(bd.getRating().getVoteCount()).isZero();
+        assertThat(bd.getRating().getCommonRating()).isEqualTo(0.0);
+    }
+
+    @DisplayName("Remove not exist")
+    @Test
+    void removeNotExist() {
+        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+        assertThat(bd).isNotNull();
+        boolean removed = bd.removeReview(new Review("ASD", 5, 10L, bd));
+        assertThat(removed).isFalse();
     }
 }

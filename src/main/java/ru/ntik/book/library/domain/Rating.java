@@ -18,7 +18,7 @@ public class Rating {
     @Column(name = COLUMN_COMMON_RATING_NAME, columnDefinition = COLUMN_COMMON_RATING_DEFINITION)
     double commonRating;
 
-    public Rating(int voteCount, double commonRating) {
+    Rating(int voteCount, double commonRating) {
         this.voteCount = voteCount;
         this.commonRating = commonRating;
     }
@@ -31,6 +31,11 @@ public class Rating {
     public void setCommonRating(double commonRating) {
         Checker.checkDoubleRange(commonRating, 0, 5.0);
         this.commonRating = commonRating;
+    }
+
+    public void resetToZero() {
+        setCommonRating(0);
+        setVoteCount(0);
     }
 
     public static final String COLUMN_VOTE_COUNT_NAME = "vote_count";
