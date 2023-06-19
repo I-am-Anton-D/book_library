@@ -40,7 +40,7 @@ public class Review extends StoredObject {
     }
 
     public void setRating(int rating) {
-        this.rating = Checker.checkIntegerRange(rating, 1, 5);
+        this.rating = Checker.checkIntegerRange(rating, 0, 5);
     }
 
     public void setText(String text) {
@@ -58,5 +58,5 @@ public class Review extends StoredObject {
             "VARCHAR(" + LONG_STRING_LENGTH + ") CHECK (length(" + COLUMN_TEXT_NAME + ") >= " + MIN_STRING_LENGTH + ") NOT NULL";
     private static final String COLUMN_RATING_NAME = "rating";
     private static final String COLUMN_RATING_DEFINITION =
-            "SMALLINT CHECK(" + COLUMN_RATING_NAME + " BETWEEN 1 AND 5)";
+            "SMALLINT CHECK(" + COLUMN_RATING_NAME + " BETWEEN 0 AND 5)";
 }

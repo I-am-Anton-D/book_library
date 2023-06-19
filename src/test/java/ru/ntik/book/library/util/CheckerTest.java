@@ -60,4 +60,18 @@ class CheckerTest {
         assertThrows(IllegalArgumentException.class, () -> Checker.checkIntegerRange(value, min, min + 1));
         assertThrows(NullPointerException.class, () -> Checker.checkIntegerRange(null, min, min + 1));
     }
+
+    @DisplayName("Проверяет диапазон числа дробного")
+    @Test
+    void checkDoubleNumberLimits() {
+        final double min = 10.0;
+        final double max = 20.0;
+        double value = 15.0;
+
+        assertThat(Checker.checkDoubleRange(value, min, max)).isEqualTo(value);
+        assertThrows(IllegalArgumentException.class, () -> Checker.checkDoubleRange(value, max, max + max));
+        assertThrows(IllegalArgumentException.class, () -> Checker.checkDoubleRange(value, min, min + 1));
+        assertThrows(IllegalArgumentException.class, () -> Checker.checkDoubleRange(value, max, min));
+        assertThrows(NullPointerException.class, () -> Checker.checkDoubleRange(null, min, min + 1));
+    }
 }

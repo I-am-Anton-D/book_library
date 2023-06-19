@@ -34,27 +34,6 @@ class BookRepositoryFetchTest {
         AssertSqlQueriesCount.reset();
     }
 
-    @DisplayName("Все Lazy")
-    @Test
-    void lazyFetch() {
-        BookDefinition bd = bookRepository.findById(1L).orElse(null);
-        assertThat(bd).isNotNull();
-        AssertSqlQueriesCount.assertSelectCount(1);
-
-        //No Lazy load here
-        Publisher publisher = bd.getPublisher();
-        assertThat(publisher).isNotNull();
-        Collection<Author> authors = bd.getAuthors();
-
-        AssertSqlQueriesCount.assertSelectCount(1);
-
-        //Lazy load here
-        String name = publisher .getName();
-        assertThat(name).isNotNull();
-        assertThat(authors).isNotEmpty();
-        AssertSqlQueriesCount.assertSelectCount(3);
-    }
-
     @DisplayName("Каскадный персист проверяем")
     @Test
     void cascadeFetchTest() {
@@ -159,6 +138,9 @@ class BookRepositoryFetchTest {
 
         assertThat(bd.getLinks()).isNotEmpty();
         AssertSqlQueriesCount.assertSelectCount(4);
+
+        assertThat(bd.getReviews()).isNotEmpty();
+        AssertSqlQueriesCount.assertSelectCount(5);
     }
 
     @DisplayName("Eager Load")
@@ -172,6 +154,7 @@ class BookRepositoryFetchTest {
         assertThat(eager.getPublisher().getName()).isNotNull();
         assertThat(eager.getAuthors()).isNotEmpty();
         assertThat(eager.getLinks()).isNotEmpty();
+        assertThat(eager.getReviews()).isNotEmpty();
         AssertSqlQueriesCount.assertSelectCount(1);
     }
 

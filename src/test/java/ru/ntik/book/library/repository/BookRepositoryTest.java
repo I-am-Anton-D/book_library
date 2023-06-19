@@ -134,7 +134,7 @@ class BookRepositoryTest {
         assertThatCode(() -> bookRepository.deleteById(-20L)).doesNotThrowAnyException();
     }
 
-    @DisplayName("Проверяем Optimisic lock на версии")
+    @DisplayName("Проверяем Optimistic lock на версии")
     @Test
     void checkOptimisticLock() throws InterruptedException {
 

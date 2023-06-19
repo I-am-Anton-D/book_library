@@ -23,12 +23,12 @@ public class Rating {
         this.commonRating = commonRating;
     }
 
-    private void setVoteCount(int voteCount) {
+    public void setVoteCount(int voteCount) {
         Checker.checkIntegerRange(voteCount, 0, Integer.MAX_VALUE);
         this.voteCount = voteCount;
     }
 
-    private void setCommonRating(double commonRating) {
+    public void setCommonRating(double commonRating) {
         Checker.checkDoubleRange(commonRating, 0, 5.0);
         this.commonRating = commonRating;
     }
