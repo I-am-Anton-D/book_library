@@ -1,7 +1,11 @@
 package ru.ntik.book.library.testutils;
 
+import lombok.SneakyThrows;
 import ru.ntik.book.library.domain.BookDefinition;
+import ru.ntik.book.library.domain.Category;
 import ru.ntik.book.library.domain.enums.BookLanguage;
+
+import java.lang.reflect.Constructor;
 
 public class TestUtils {
     public static final String BOOK_NAME = "BOOK_NAME";
@@ -13,7 +17,12 @@ public class TestUtils {
     public static final int PAGE_COUNT = 1000;
     public static final BookLanguage BOOK_LANGUAGE = BookLanguage.RUSSIAN;
 
-    public static BookDefinition createBookDefinition() {
-        return new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE);
+    @SneakyThrows
+    public static BookDefinition createBookDefinition()  {
+        final Constructor<Category> declaredConstructor = Category.class.getDeclaredConstructor();
+        declaredConstructor.setAccessible(true);
+        Category category = declaredConstructor.newInstance();
+
+        return new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category);
     }
 }

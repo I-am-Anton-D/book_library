@@ -22,6 +22,8 @@ import static ru.ntik.book.library.testutils.TestUtils.*;
 @Execution(ExecutionMode.CONCURRENT)
 class BookDefinitionTest {
 
+    Category category = new Category();
+
     @DisplayName("Создание экземпляра")
     @Test
     void createInstance() {
@@ -32,7 +34,7 @@ class BookDefinitionTest {
         assertThat(bd).isNotNull();
 
         BookDefinition bd2 =
-                new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, null, null, null, null, null);
+                new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, null, null, null, null, null, category);
         assertThat(bd2).isNotNull();
     }
 

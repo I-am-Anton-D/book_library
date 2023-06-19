@@ -11,14 +11,15 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.BookDefinition;
+import ru.ntik.book.library.domain.Category;
 import ru.ntik.book.library.domain.enums.BookLanguage;
-import ru.ntik.book.library.testutils.TestUtils;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static ru.ntik.book.library.testutils.TestUtils.*;
 
 @SpringBootTest
 @ActiveProfiles("h2")
@@ -28,6 +29,9 @@ class BookRepositoryTest {
 
     @Autowired
     BookRepository bookRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
 
     @BeforeEach
     void resetSqlCount() {
@@ -87,7 +91,12 @@ class BookRepositoryTest {
     @DisplayName("Должен сохранить объект")
     @Test
     void saveEntityTest() {
-        BookDefinition bd = TestUtils.createBookDefinition();
+        Category category = categoryRepository.findRoot();
+        assertThat(category).isNotNull();
+        AssertSqlQueriesCount.reset();
+
+        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category);
+
         bd = bookRepository.save(bd);
         bookRepository.flush();
 
@@ -169,7 +178,10 @@ class BookRepositoryTest {
         BookDefinition bd = bookRepository.findById(1L).orElse(null);
         assertThat(bd).isNotNull();
 
-        BookDefinition newBook = new BookDefinition("Some book", null, 10L, 2020, null,null,10, BookLanguage.RUSSIAN);
+        Category category = categoryRepository.findRoot();
+        assertThat(category).isNotNull();
+
+        BookDefinition newBook = new BookDefinition("Some book", null, 10L, 2020, null,null,10, BookLanguage.RUSSIAN, category);
         boolean added = bd.getLinks().add(newBook);
         assertThat(added).isTrue();
 

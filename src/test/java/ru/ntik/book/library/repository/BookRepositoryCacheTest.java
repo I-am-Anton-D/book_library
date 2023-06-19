@@ -9,12 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.BookDefinition;
-import ru.ntik.book.library.testutils.TestUtils;
+import ru.ntik.book.library.domain.Category;
 import ru.ntik.book.library.util.Constants;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static ru.ntik.book.library.testutils.TestUtils.*;
 
 
 @SpringBootTest
@@ -30,6 +31,8 @@ class BookRepositoryCacheTest {
     private SessionFactory sessionFactory;
     @Autowired
     BookRepository bookRepository;
+    @Autowired
+    CategoryRepository categoryRepository;
 
     private CacheRegionStatistics cache;
 
@@ -87,7 +90,11 @@ class BookRepositoryCacheTest {
     @Order(4)
     @Test
     void addNewObject() {
-        BookDefinition bd = TestUtils.createBookDefinition();
+        Category category = categoryRepository.findRoot();
+        assertThat(category).isNotNull();
+        AssertSqlQueriesCount.reset();
+
+        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category);
         bd = bookRepository.save(bd);
         bookRepository.flush();
 

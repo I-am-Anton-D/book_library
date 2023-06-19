@@ -39,6 +39,10 @@ public class BookDefinition extends NamedObject {
     @Embedded
     private Rating rating;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(nullable = false)
+    private Category category;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Publisher publisher;
 
@@ -61,9 +65,12 @@ public class BookDefinition extends NamedObject {
     private final List<Review> reviews = new ArrayList<>();
 
     public BookDefinition(String name, String description, Long creator, Integer releaseYear,
-                          String coverType, String isbn, Integer pageCount, BookLanguage language) {
+                          String coverType, String isbn, Integer pageCount, BookLanguage language, Category category) {
 
         super(name, description, creator);
+
+        setCategory(category);
+
         printInfo = new PrintInfo(releaseYear, coverType, isbn, pageCount, language);
         rating = new Rating(0, 0.0);
     }
@@ -104,6 +111,10 @@ public class BookDefinition extends NamedObject {
         this.publisher = publisher;
     }
 
-    public static final String GRAPH_FETCH_ALL = "BookDefinition.FETCH_ALL";
+    public void setCategory(Category category) {
+        Objects.requireNonNull(category);
+        this.category = category;
+    }
 
+    public static final String GRAPH_FETCH_ALL = "BookDefinition.FETCH_ALL";
 }
