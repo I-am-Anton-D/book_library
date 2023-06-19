@@ -1,8 +1,6 @@
 package ru.ntik.book.library.domain;
 
-import jakarta.persistence.Cacheable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,10 +29,14 @@ public class Review extends StoredObject {
     @Column(name = COLUMN_RATING_NAME, columnDefinition = COLUMN_RATING_DEFINITION)
     private int rating;
 
-    public Review(String text, int rating, long creator) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    private BookDefinition bookDefinition;
+
+    public Review(String text, int rating, long creator, BookDefinition bookDefinition) {
         super(creator);
         setText(text);
         setRating(rating);
+        setBookDefinition(bookDefinition);
     }
 
     public void setRating(int rating) {
@@ -44,6 +46,11 @@ public class Review extends StoredObject {
     public void setText(String text) {
         Objects.requireNonNull(text);
         this.text = Checker.checkStringLength(text, MIN_STRING_LENGTH, LONG_STRING_LENGTH);
+    }
+
+    public void setBookDefinition(BookDefinition bookDefinition) {
+        Objects.requireNonNull(bookDefinition);
+        this.bookDefinition = bookDefinition;
     }
 
     private static final String COLUMN_TEXT_NAME = "text";

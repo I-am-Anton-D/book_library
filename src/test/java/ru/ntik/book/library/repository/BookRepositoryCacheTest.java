@@ -108,7 +108,7 @@ class BookRepositoryCacheTest {
 
         BookDefinition bd = bookRepository.findById(1L).orElse(null);
         assertThat(bd).isNull();
-        AssertSqlQueriesCount.assertSelectCount(1);
+        AssertSqlQueriesCount.assertSelectCount(2);
     }
 
     @DisplayName("Меняем элемент в базе и в кешу")

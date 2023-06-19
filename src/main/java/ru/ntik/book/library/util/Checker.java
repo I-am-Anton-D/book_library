@@ -26,12 +26,28 @@ public class Checker {
         }
         return n;
     }
+    public static Double checkDoubleRange(Double n, double min, double max) {
+        Objects.requireNonNull(n);
+        checkLimits(min, max);
+
+        if (n < min || n > max) {
+            throw new IllegalArgumentException(
+                    String.format("Number out of range. Min = %f, max = %f , current = %f", min, max, n));
+
+        }
+        return n;
+    }
+
+    private static void checkLimits(double min, double max) {
+        if (min >= max) {
+            throw new IllegalArgumentException("min >= max");
+        }
+    }
 
     private static void checkLimits(int min, int max) {
         if (min >= max) {
             throw new IllegalArgumentException("min >= max");
         }
-
     }
 
     private Checker() {

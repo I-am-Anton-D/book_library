@@ -3,6 +3,7 @@ package ru.ntik.book.library.domain;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,7 +12,9 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
 import ru.ntik.book.library.domain.enums.BookLanguage;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static ru.ntik.book.library.domain.BookDefinition.GRAPH_FETCH_ALL;
@@ -36,13 +39,14 @@ public class BookDefinition extends NamedObject {
     @Embedded
     private PrintInfo printInfo;
 
+    @Embedded
+    private Rating rating;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Publisher publisher;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "book_to_author",
-            joinColumns = @JoinColumn(name = "book_definitions_id"),
-            inverseJoinColumns = @JoinColumn(name = "authors_id"),
             indexes = @Index(name = "author_book_idx", columnList = "authors_id, book_definitions_id", unique = true))
     private final Set<Author> authors = new HashSet<>();
 
@@ -54,13 +58,17 @@ public class BookDefinition extends NamedObject {
     )
     private final Set<BookDefinition> links = new HashSet<>();
 
-
+    @OneToMany(mappedBy = "bookDefinition", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OrderBy("created")
+    private final List<Review> reviews = new ArrayList<>();
 
     public BookDefinition(String name, String description, Long creator, Integer releaseYear,
                           String coverType, String isbn, Integer pageCount, BookLanguage language) {
 
         super(name, description, creator);
         printInfo = new PrintInfo(releaseYear, coverType, isbn, pageCount, language);
+        rating = new Rating(0, 0.0);
     }
 
     public void setPublisher(Publisher publisher) {
@@ -68,4 +76,5 @@ public class BookDefinition extends NamedObject {
     }
 
     public static final String GRAPH_FETCH_ALL = "BookDefinition.FETCH_ALL";
+
 }
