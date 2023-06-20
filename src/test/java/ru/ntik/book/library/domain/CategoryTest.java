@@ -29,11 +29,13 @@ class CategoryTest {
     void unmodifiedCollections() {
         Category category = new Category("Cat 1", null, 10L, new Category());
 
+        Category newCategory = new Category();
         Set<Category> children = category.getChildren();
-        assertThrows(UnsupportedOperationException.class, () -> children.add(new Category()));
+        assertThrows(UnsupportedOperationException.class, () -> children.add(newCategory));
 
+        BookDefinition bd = TestUtils.createBookDefinition();
         Set<BookDefinition> books = category.getBooks();
-        assertThrows(UnsupportedOperationException.class, ()->books.add(TestUtils.createBookDefinition()));
+        assertThrows(UnsupportedOperationException.class, ()->books.add(bd));
     }
 
 }
