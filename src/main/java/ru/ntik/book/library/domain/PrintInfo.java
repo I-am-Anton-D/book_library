@@ -36,12 +36,14 @@ public class PrintInfo {
 
     protected PrintInfo() {}
 
-    public PrintInfo(Integer releaseYear, String coverType, String isbn, Integer pageCount, BookLanguage language) {
+    public PrintInfo(Integer releaseYear, String coverType, String isbn, Integer pageCount,
+                     BookLanguage language, Publisher publisher) {
         setReleaseYear(releaseYear);
         setCoverType(coverType);
         setIsbn(isbn);
         setPageCount(pageCount);
         setLanguage(language);
+        setPublisher(publisher);
     }
 
     public void setReleaseYear(Integer releaseYear) {

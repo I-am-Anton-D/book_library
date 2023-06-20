@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.BookDefinition;
 import ru.ntik.book.library.domain.Category;
+import ru.ntik.book.library.domain.PrintInfo;
 import ru.ntik.book.library.domain.enums.BookLanguage;
 
 import java.util.List;
@@ -95,7 +96,8 @@ class BookRepositoryTest {
         assertThat(category).isNotNull();
         AssertSqlQueriesCount.reset();
 
-        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category);
+        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR,
+                new PrintInfo(RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, null), category);
 
         bd = bookRepository.save(bd);
         bookRepository.flush();
@@ -181,7 +183,8 @@ class BookRepositoryTest {
         Category category = categoryRepository.findRoot();
         assertThat(category).isNotNull();
 
-        BookDefinition newBook = new BookDefinition("Some book", null, 10L, 2020, null,null,10, BookLanguage.RUSSIAN, category);
+        BookDefinition newBook = new BookDefinition("Some book", null, 10L,
+                new PrintInfo(2020, null,null,10, BookLanguage.RUSSIAN, null), category);
         boolean added = bd.getLinks().add(newBook);
         assertThat(added).isTrue();
 

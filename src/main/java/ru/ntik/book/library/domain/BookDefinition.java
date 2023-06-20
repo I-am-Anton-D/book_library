@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
-import ru.ntik.book.library.domain.enums.BookLanguage;
 
 import java.util.*;
 
@@ -57,15 +56,18 @@ public class BookDefinition extends NamedObject {
     @OrderBy("created DESC" )
     private final List<Review> reviews = new ArrayList<>();
 
-    public BookDefinition(String name, String description, Long creator, Integer releaseYear,
-                          String coverType, String isbn, Integer pageCount, BookLanguage language, Category category) {
-
+    public BookDefinition(String name, String description, Long creator, PrintInfo printInfo, Category category) {
         super(name, description, creator);
 
+        setPintInfo(printInfo);
         setCategory(category);
 
-        printInfo = new PrintInfo(releaseYear, coverType, isbn, pageCount, language);
         rating = new Rating(0, 0.0);
+    }
+
+    private void setPintInfo(PrintInfo printInfo) {
+        Objects.requireNonNull(printInfo);
+        this.printInfo = printInfo;
     }
 
     public List<Review> getReviews() {

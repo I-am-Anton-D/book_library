@@ -34,7 +34,8 @@ class BookDefinitionTest {
         assertThat(bd).isNotNull();
 
         BookDefinition bd2 =
-                new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, null, null, null, null, BookLanguage.RUSSIAN, category);
+                new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR,
+                        new PrintInfo(null, null, null, null, BookLanguage.RUSSIAN, null), category);
         assertThat(bd2).isNotNull();
     }
 

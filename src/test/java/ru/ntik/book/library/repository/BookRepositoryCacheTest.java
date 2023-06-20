@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.BookDefinition;
 import ru.ntik.book.library.domain.Category;
+import ru.ntik.book.library.domain.PrintInfo;
 import ru.ntik.book.library.util.Constants;
 
 import java.util.List;
@@ -94,7 +95,8 @@ class BookRepositoryCacheTest {
         assertThat(category).isNotNull();
         AssertSqlQueriesCount.reset();
 
-        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category);
+        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR,
+                new PrintInfo(RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, null), category);
         bd = bookRepository.save(bd);
         bookRepository.flush();
 

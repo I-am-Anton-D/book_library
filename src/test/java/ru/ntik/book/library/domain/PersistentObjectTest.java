@@ -15,12 +15,13 @@ import static ru.ntik.book.library.testutils.TestUtils.*;
 
 class PersistentObjectTest {
 
+    PrintInfo po = new PrintInfo(RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, null);
     Category category = new Category();
 
     @Test
     @DisplayName("Должен создаться экземпляр")
     void createInstanceTest() {
-        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category);
+        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, po, category);
 
         assertThat(bd).isNotNull();
         assertThat(bd.getId()).isNull();
@@ -37,12 +38,12 @@ class PersistentObjectTest {
     @DisplayName("Не создать без имени и с пустым")
     void nameIsMandatory() {
         assertThrows(NullPointerException.class,
-                () -> new BookDefinition(null, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category));
+                () -> new BookDefinition(null, BOOK_DESC, CREATOR, po, category));
         assertThrows(IllegalArgumentException.class,
-                () -> new BookDefinition("", BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category));
+                () -> new BookDefinition("", BOOK_DESC, CREATOR, po, category));
 
         assertThatCode(
-                () -> new BookDefinition("A", BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category)).doesNotThrowAnyException();
+                () -> new BookDefinition("A", BOOK_DESC, CREATOR, po, category)).doesNotThrowAnyException();
     }
 
 
@@ -58,20 +59,20 @@ class PersistentObjectTest {
         assertThat(s129).hasSize(129);
 
         assertThatCode(() ->
-                new BookDefinition(s127, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category)).doesNotThrowAnyException();
+                new BookDefinition(s127, BOOK_DESC, CREATOR, po, category)).doesNotThrowAnyException();
         assertThatCode(() ->
-                new BookDefinition(s128, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category)).doesNotThrowAnyException();
+                new BookDefinition(s128, BOOK_DESC, CREATOR, po, category)).doesNotThrowAnyException();
         assertThrows(IllegalArgumentException.class,
-                () -> new BookDefinition(s129, BOOK_DESC, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category));
+                () -> new BookDefinition(s129, BOOK_DESC, CREATOR, po, category));
     }
 
     @Test
     @DisplayName("Description не обязателен, не не может быть пустым")
     void descriptionIsOptional() {
         assertThatCode(() ->
-                new BookDefinition(BOOK_NAME, null, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category)).doesNotThrowAnyException();
+                new BookDefinition(BOOK_NAME, null, CREATOR, po, category)).doesNotThrowAnyException();
         assertThrows(IllegalArgumentException.class,
-                () -> new BookDefinition(BOOK_NAME, "", CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category));
+                () -> new BookDefinition(BOOK_NAME, "", CREATOR, po, category));
     }
 
     @Test
@@ -145,21 +146,21 @@ class PersistentObjectTest {
                 5-е издание""";
 
         assertThatCode(() ->
-                new BookDefinition(BOOK_NAME, longDesc, CREATOR, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category)).doesNotThrowAnyException();
+                new BookDefinition(BOOK_NAME, longDesc, CREATOR, po, category)).doesNotThrowAnyException();
     }
 
     @DisplayName("Не создать с нуловым creator")
     @Test
     void creatorIsNull() {
         assertThrows(NullPointerException.class, ()->
-        new BookDefinition(BOOK_NAME, BOOK_DESC, null, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category));
+        new BookDefinition(BOOK_NAME, BOOK_DESC, null, po, category));
     }
 
     @DisplayName("Не создать с нуловым языком")
     @Test
     void languageIsNull() {
         assertThrows(NullPointerException.class, ()->
-                new BookDefinition(BOOK_NAME, BOOK_DESC, null, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, null, category));
+                new PrintInfo(RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, null, null));
     }
 
     @Test
