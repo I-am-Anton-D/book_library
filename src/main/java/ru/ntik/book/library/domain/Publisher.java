@@ -29,7 +29,7 @@ import static ru.ntik.book.library.util.Constants.PUBLISHER_REGION_NAME;
 
 public class Publisher extends NamedObject {
 
-    @OneToMany(mappedBy = "publisher", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "printInfo.publisher", fetch = FetchType.LAZY)
     private final Set<BookDefinition> bookDefinitions = new HashSet<>();
 
     public Publisher(String name, String description, Long creator) {

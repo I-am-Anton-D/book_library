@@ -1,12 +1,11 @@
 package ru.ntik.book.library.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.Getter;
 import ru.ntik.book.library.domain.enums.BookLanguage;
 import ru.ntik.book.library.util.Checker;
+
+import java.util.Objects;
 
 import static ru.ntik.book.library.util.Constants.SMALL_STRING_LENGTH;
 
@@ -31,9 +30,13 @@ public class PrintInfo {
     @Column(name = "language", length = 20)
     private BookLanguage language;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "publisher_id")
+    public Publisher publisher;
+
     protected PrintInfo() {}
 
-    PrintInfo(Integer releaseYear, String coverType, String isbn, Integer pageCount, BookLanguage language) {
+    public PrintInfo(Integer releaseYear, String coverType, String isbn, Integer pageCount, BookLanguage language) {
         setReleaseYear(releaseYear);
         setCoverType(coverType);
         setIsbn(isbn);
@@ -62,9 +65,13 @@ public class PrintInfo {
     }
 
     public void setLanguage(BookLanguage language) {
+        Objects.requireNonNull(language);
         this.language = language;
     }
 
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
 
     private static final String COLUMN_RELEASE_YEAR_NAME = "release_year";
     public static final int RELEASE_YEAR_MIN = 1900;

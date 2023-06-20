@@ -155,6 +155,13 @@ class PersistentObjectTest {
         new BookDefinition(BOOK_NAME, BOOK_DESC, null, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, category));
     }
 
+    @DisplayName("Не создать с нуловым языком")
+    @Test
+    void languageIsNull() {
+        assertThrows(NullPointerException.class, ()->
+                new BookDefinition(BOOK_NAME, BOOK_DESC, null, RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, null, category));
+    }
+
     @Test
     @DisplayName("to String test")
     void toStringTest() {

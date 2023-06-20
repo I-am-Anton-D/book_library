@@ -1,6 +1,5 @@
 package ru.ntik.book.library.repository;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +11,12 @@ import java.util.Optional;
 @Repository
 public interface BookRepository extends JpaRepository<BookDefinition, Long> {
 
-    @EntityGraph(value = BookDefinition.GRAPH_FETCH_ALL)
-    @Query("SELECT b FROM BookDefinition b WHERE b.id = :id")
+    //EAGER ALL LOAD
+    @Query("SELECT b FROM BookDefinition b " +
+            "join fetch b.printInfo.publisher " +
+            "join fetch b.authors " +
+            "join fetch b.category " +
+            "join fetch b.links " +
+            "join fetch b.reviews WHERE b.id = :id")
     Optional<BookDefinition> fetchById(@Param("id") Long id);
 }

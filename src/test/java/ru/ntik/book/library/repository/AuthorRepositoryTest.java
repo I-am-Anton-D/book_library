@@ -98,3 +98,4 @@ class AuthorRepositoryTest {
         assertThrows(DataIntegrityViolationException.class, ()-> authorRepository.flush());
     }
 }
+

@@ -42,7 +42,7 @@ class BookRepositoryFetchTest {
         AssertSqlQueriesCount.assertSelectCount(1);
 
         Publisher publisher = new Publisher("New Pub", null, 10L);
-        bd.setPublisher(publisher);
+        bd.getPrintInfo().setPublisher(publisher);
 
         bd = bookRepository.save(bd);
         bookRepository.flush();
@@ -67,8 +67,8 @@ class BookRepositoryFetchTest {
         AssertSqlQueriesCount.assertInsertCount(3);
         AssertSqlQueriesCount.assertUpdateCount(1);
 
-        assertThat(bd.getPublisher().getId()).isNotNull();
-        Publisher saved = publisherRepository.findById(bd.getPublisher().getId()).orElse(null);
+        assertThat(bd.getPrintInfo().getPublisher().getId()).isNotNull();
+        Publisher saved = publisherRepository.findById(bd.getPrintInfo().getPublisher().getId()).orElse(null);
         assertThat(saved).isNotNull();
     }
 
@@ -101,7 +101,7 @@ class BookRepositoryFetchTest {
         assertThat(bd).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
 
-        bd.getPublisher().setName("New Name");
+        bd.getPrintInfo().getPublisher().setName("New Name");
         bookRepository.save(bd);
         AssertSqlQueriesCount.assertUpdateCount(0);
 
@@ -129,7 +129,8 @@ class BookRepositoryFetchTest {
         assertThat(bd).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
 
-        Publisher pub = bd.getPublisher();
+        //Publisher Eager load
+        Publisher pub = bd.getPrintInfo().getPublisher();
         assertThat(pub.getName()).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(2);
 
@@ -151,7 +152,7 @@ class BookRepositoryFetchTest {
         AssertSqlQueriesCount.assertSelectCount(1);
         assertThat(eager).isNotNull();
 
-        assertThat(eager.getPublisher().getName()).isNotNull();
+        assertThat(eager.getPrintInfo().getPublisher().getName()).isNotNull();
         assertThat(eager.getAuthors()).isNotEmpty();
         assertThat(eager.getLinks()).isNotEmpty();
         assertThat(eager.getReviews()).isNotEmpty();

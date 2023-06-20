@@ -14,13 +14,9 @@ import ru.ntik.book.library.domain.enums.BookLanguage;
 
 import java.util.*;
 
-import static ru.ntik.book.library.domain.BookDefinition.GRAPH_FETCH_ALL;
 import static ru.ntik.book.library.util.Constants.BOOK_DEFINITION_REGION_NAME;
-import static ru.ntik.book.library.util.Constants.PO_BATCH_SIZE;
 
 @Entity
-@BatchSize(size = PO_BATCH_SIZE)
-@NamedEntityGraph(name = GRAPH_FETCH_ALL, includeAllAttributes = true)
 
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
@@ -42,9 +38,6 @@ public class BookDefinition extends NamedObject {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(nullable = false)
     private Category category;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Publisher publisher;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "book_to_author",
@@ -79,10 +72,6 @@ public class BookDefinition extends NamedObject {
         return Collections.unmodifiableList(reviews);
     }
 
-    public void setPublisher(Publisher publisher) {
-        this.publisher = publisher;
-    }
-
     public void setCategory(Category category) {
         Objects.requireNonNull(category);
         this.category = category;
@@ -115,6 +104,4 @@ public class BookDefinition extends NamedObject {
             rating.setVoteCount(count);
         }
     }
-
-    public static final String GRAPH_FETCH_ALL = "BookDefinition.FETCH_ALL";
 }
