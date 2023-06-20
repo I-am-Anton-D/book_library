@@ -41,7 +41,7 @@ public abstract class StoredObject {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof NamedObject that)) return false;
+        if (!(o instanceof StoredObject that)) return false;
 
         return id != null && that.getId() != null
                 && Objects.equals(id, that.getId());

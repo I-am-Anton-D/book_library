@@ -79,6 +79,15 @@ public class BookDefinition extends NamedObject {
         return Collections.unmodifiableList(reviews);
     }
 
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
+
+    public void setCategory(Category category) {
+        Objects.requireNonNull(category);
+        this.category = category;
+    }
+
     public void addReview(Review review) {
         Objects.requireNonNull(review);
         reviews.add(review);
@@ -105,15 +114,6 @@ public class BookDefinition extends NamedObject {
             rating.setCommonRating(avg);
             rating.setVoteCount(count);
         }
-    }
-
-    public void setPublisher(Publisher publisher) {
-        this.publisher = publisher;
-    }
-
-    public void setCategory(Category category) {
-        Objects.requireNonNull(category);
-        this.category = category;
     }
 
     public static final String GRAPH_FETCH_ALL = "BookDefinition.FETCH_ALL";
