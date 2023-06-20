@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -16,12 +19,13 @@ import static ru.ntik.book.library.testutils.TestUtils.*;
 class PersistentObjectTest {
 
     PrintInfo po = new PrintInfo(RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, null);
+    List<Author> authors = Collections.emptyList();
     Category category = new Category();
 
     @Test
     @DisplayName("Должен создаться экземпляр")
     void createInstanceTest() {
-        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, po, category);
+        BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, po, authors, category);
 
         assertThat(bd).isNotNull();
         assertThat(bd.getId()).isNull();
@@ -38,12 +42,12 @@ class PersistentObjectTest {
     @DisplayName("Не создать без имени и с пустым")
     void nameIsMandatory() {
         assertThrows(NullPointerException.class,
-                () -> new BookDefinition(null, BOOK_DESC, CREATOR, po, category));
+                () -> new BookDefinition(null, BOOK_DESC, CREATOR, po, authors,category));
         assertThrows(IllegalArgumentException.class,
-                () -> new BookDefinition("", BOOK_DESC, CREATOR, po, category));
+                () -> new BookDefinition("", BOOK_DESC, CREATOR, po, authors, category));
 
         assertThatCode(
-                () -> new BookDefinition("A", BOOK_DESC, CREATOR, po, category)).doesNotThrowAnyException();
+                () -> new BookDefinition("A", BOOK_DESC, CREATOR, po, authors, category)).doesNotThrowAnyException();
     }
 
 
@@ -59,20 +63,20 @@ class PersistentObjectTest {
         assertThat(s129).hasSize(129);
 
         assertThatCode(() ->
-                new BookDefinition(s127, BOOK_DESC, CREATOR, po, category)).doesNotThrowAnyException();
+                new BookDefinition(s127, BOOK_DESC, CREATOR, po, authors,category)).doesNotThrowAnyException();
         assertThatCode(() ->
-                new BookDefinition(s128, BOOK_DESC, CREATOR, po, category)).doesNotThrowAnyException();
+                new BookDefinition(s128, BOOK_DESC, CREATOR, po, authors,category)).doesNotThrowAnyException();
         assertThrows(IllegalArgumentException.class,
-                () -> new BookDefinition(s129, BOOK_DESC, CREATOR, po, category));
+                () -> new BookDefinition(s129, BOOK_DESC, CREATOR, po, authors, category));
     }
 
     @Test
     @DisplayName("Description не обязателен, не не может быть пустым")
     void descriptionIsOptional() {
         assertThatCode(() ->
-                new BookDefinition(BOOK_NAME, null, CREATOR, po, category)).doesNotThrowAnyException();
+                new BookDefinition(BOOK_NAME, null, CREATOR, po, authors,category)).doesNotThrowAnyException();
         assertThrows(IllegalArgumentException.class,
-                () -> new BookDefinition(BOOK_NAME, "", CREATOR, po, category));
+                () -> new BookDefinition(BOOK_NAME, "", CREATOR, po, authors, category));
     }
 
     @Test
@@ -146,14 +150,14 @@ class PersistentObjectTest {
                 5-е издание""";
 
         assertThatCode(() ->
-                new BookDefinition(BOOK_NAME, longDesc, CREATOR, po, category)).doesNotThrowAnyException();
+                new BookDefinition(BOOK_NAME, longDesc, CREATOR, po, authors,category)).doesNotThrowAnyException();
     }
 
     @DisplayName("Не создать с нуловым creator")
     @Test
     void creatorIsNull() {
         assertThrows(NullPointerException.class, ()->
-        new BookDefinition(BOOK_NAME, BOOK_DESC, null, po, category));
+        new BookDefinition(BOOK_NAME, BOOK_DESC, null, po, authors, category));
     }
 
     @DisplayName("Не создать с нуловым языком")

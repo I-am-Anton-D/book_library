@@ -13,6 +13,7 @@ import ru.ntik.book.library.domain.Category;
 import ru.ntik.book.library.domain.PrintInfo;
 import ru.ntik.book.library.util.Constants;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,7 +97,7 @@ class BookRepositoryCacheTest {
         AssertSqlQueriesCount.reset();
 
         BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR,
-                new PrintInfo(RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, null), category);
+                new PrintInfo(RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, null), Collections.emptyList(),  category);
         bd = bookRepository.save(bd);
         bookRepository.flush();
 

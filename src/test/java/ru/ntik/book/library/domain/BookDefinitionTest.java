@@ -10,7 +10,9 @@ import ru.ntik.book.library.testutils.TestUtils;
 import ru.ntik.book.library.util.Constants;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,6 +25,7 @@ import static ru.ntik.book.library.testutils.TestUtils.*;
 class BookDefinitionTest {
 
     Category category = new Category();
+    List<Author> authors = Collections.emptyList();
 
     @DisplayName("Создание экземпляра")
     @Test
@@ -35,7 +38,7 @@ class BookDefinitionTest {
 
         BookDefinition bd2 =
                 new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR,
-                        new PrintInfo(null, null, null, null, BookLanguage.RUSSIAN, null), category);
+                        new PrintInfo(null, null, null, null, BookLanguage.RUSSIAN, null), authors, category);
         assertThat(bd2).isNotNull();
     }
 

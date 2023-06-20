@@ -15,6 +15,7 @@ import ru.ntik.book.library.domain.Category;
 import ru.ntik.book.library.domain.PrintInfo;
 import ru.ntik.book.library.domain.enums.BookLanguage;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,7 +98,7 @@ class BookRepositoryTest {
         AssertSqlQueriesCount.reset();
 
         BookDefinition bd = new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR,
-                new PrintInfo(RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, null), category);
+                new PrintInfo(RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, null), Collections.emptyList(), category);
 
         bd = bookRepository.save(bd);
         bookRepository.flush();
@@ -184,7 +185,7 @@ class BookRepositoryTest {
         assertThat(category).isNotNull();
 
         BookDefinition newBook = new BookDefinition("Some book", null, 10L,
-                new PrintInfo(2020, null,null,10, BookLanguage.RUSSIAN, null), category);
+                new PrintInfo(2020, null,null,10, BookLanguage.RUSSIAN, null), Collections.emptyList(), category);
         boolean added = bd.getLinks().add(newBook);
         assertThat(added).isTrue();
 

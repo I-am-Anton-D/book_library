@@ -142,6 +142,9 @@ class BookRepositoryFetchTest {
 
         assertThat(bd.getReviews()).isNotEmpty();
         AssertSqlQueriesCount.assertSelectCount(5);
+
+        assertThat(bd.getCategory().getName()).isNotNull();
+        AssertSqlQueriesCount.assertSelectCount(6);
     }
 
     @DisplayName("Eager Load")
@@ -156,6 +159,7 @@ class BookRepositoryFetchTest {
         assertThat(eager.getAuthors()).isNotEmpty();
         assertThat(eager.getLinks()).isNotEmpty();
         assertThat(eager.getReviews()).isNotEmpty();
+        assertThat(eager.getCategory().getName()).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
     }
 

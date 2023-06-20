@@ -56,13 +56,20 @@ public class BookDefinition extends NamedObject {
     @OrderBy("created DESC" )
     private final List<Review> reviews = new ArrayList<>();
 
-    public BookDefinition(String name, String description, Long creator, PrintInfo printInfo, Category category) {
+    public BookDefinition(String name, String description, Long creator, PrintInfo printInfo,
+                          List<Author> authors, Category category) {
         super(name, description, creator);
 
         setPintInfo(printInfo);
         setCategory(category);
+        setAuthors(authors);
 
         rating = new Rating(0, 0.0);
+    }
+
+    private void setAuthors(List<Author> authors) {
+        Objects.requireNonNull(authors);
+        this.authors.addAll(authors);
     }
 
     private void setPintInfo(PrintInfo printInfo) {

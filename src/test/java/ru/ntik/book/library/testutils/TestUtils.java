@@ -7,6 +7,7 @@ import ru.ntik.book.library.domain.PrintInfo;
 import ru.ntik.book.library.domain.enums.BookLanguage;
 
 import java.lang.reflect.Constructor;
+import java.util.Collections;
 
 public class TestUtils {
     public static final String BOOK_NAME = "BOOK_NAME";
@@ -25,6 +26,6 @@ public class TestUtils {
         Category category = declaredConstructor.newInstance();
 
         PrintInfo po = new PrintInfo(RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, null);
-        return new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, po, category);
+        return new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, po, Collections.emptyList(), category);
     }
 }
