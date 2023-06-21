@@ -1,12 +1,12 @@
 package ru.ntik.book.library.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.*;
 
 import java.util.Objects;
 
@@ -28,8 +28,12 @@ public class BookInstance extends StoredObject {
     private boolean isCompany;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_definition_id")
     private BookDefinition bookDefinition;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(nullable = false)
+    private BookInstanceStatus status;
 
     public BookInstance(Long owner, Long creator, boolean isCompany, BookDefinition bookDefinition) {
         super(creator);
@@ -38,6 +42,6 @@ public class BookInstance extends StoredObject {
         this.owner = owner;
         this.isCompany = isCompany;
         this.bookDefinition = bookDefinition;
+        this.status = new BookInstanceStatus(creator);
     }
-
 }

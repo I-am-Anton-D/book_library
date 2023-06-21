@@ -141,7 +141,8 @@ class BookRepositoryTest {
         //1 - Один DELETE удалит книгу
         //2 - Удаляет связь авторов с книгами
         //3 - Удаляет связь с другой книгой
-        AssertSqlQueriesCount.assertDeleteCount(3);
+        //4 - Удаляет instance и status
+        AssertSqlQueriesCount.assertDeleteCount(4);
 
         assertThatCode(() -> bookRepository.deleteById(-20L)).doesNotThrowAnyException();
     }

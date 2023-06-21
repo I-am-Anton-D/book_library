@@ -67,7 +67,7 @@ class BookInstanceAndStatusTest {
         bookRepository.save(bd);
         bookRepository.flush();
 
-        AssertSqlQueriesCount.assertInsertCount(1);
+        AssertSqlQueriesCount.assertInsertCount(2);
         AssertSqlQueriesCount.assertUpdateCount(1);
     }
 
@@ -90,7 +90,7 @@ class BookInstanceAndStatusTest {
         bookRepository.save(bd);
         bookRepository.flush();
 
-        AssertSqlQueriesCount.assertDeleteCount(1);
+        AssertSqlQueriesCount.assertDeleteCount(2);
         AssertSqlQueriesCount.assertUpdateCount(1);
     }
 }

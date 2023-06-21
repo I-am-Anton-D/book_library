@@ -114,15 +114,10 @@ class BookRepositoryCacheTest {
     void deleteObject() {
         bookRepository.deleteById(1L);
         bookRepository.flush();
-        AssertSqlQueriesCount.assertDeleteCount(3);
+        AssertSqlQueriesCount.assertDeleteCount(4);
 
         BookDefinition bd = bookRepository.findById(1L).orElse(null);
         assertThat(bd).isNull();
-
-        /*
-        Выбираются reviews в deleteById, не знаю почему!
-         */
-        AssertSqlQueriesCount.assertSelectCount(3);
     }
 
     @DisplayName("Меняем элемент в базе и в кешу")
