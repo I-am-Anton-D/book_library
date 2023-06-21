@@ -14,6 +14,7 @@ public class Constants {
     public static final String AUTHOR_REGION_NAME = "ru.ntik.book.library.domain.Author";
     public static final String REVIEW_REGION_NAME = "ru.ntik.book.library.domain.Review";
     public static final String CATEGORY_REGION_NAME = "ru.ntik.book.library.domain.Category";
+    public static final String BOOK_INSTANCE_REGION_NAME = "ru.ntik.book.library.domain.BookInstance";
     public static final String ID_GENERATOR = "ID_GENERATOR";
 
     private Constants() {

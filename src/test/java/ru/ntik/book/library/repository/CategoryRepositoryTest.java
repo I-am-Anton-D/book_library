@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -160,6 +161,49 @@ class CategoryRepositoryTest {
         AssertSqlQueriesCount.assertSelectCount(1);
 
         assertThat(bd.getCategory().getName()).isNotNull();
+        AssertSqlQueriesCount.assertSelectCount(2);
+    }
+
+    @DisplayName("Save with reference")
+    @Test
+    void saveByParentReference() {
+        Category parent = categoryRepository.getReferenceById(22L);
+        assertThat(parent).isNotNull();
+        AssertSqlQueriesCount.assertSelectCount(0);
+
+        Category newCategory = new Category("New Category", null, 10L, parent);
+
+        categoryRepository.save(newCategory);
+        categoryRepository.flush();
+        AssertSqlQueriesCount.assertInsertCount(1);
+        AssertSqlQueriesCount.assertUpdateCount(1);
+    }
+
+    @DisplayName("Save with reference to not exist object")
+    @Test
+    void saveByParentWithWrongReference() {
+        Category parent = categoryRepository.getReferenceById(220L);
+        assertThat(parent).isNotNull();
+        AssertSqlQueriesCount.assertSelectCount(0);
+
+        Category newCategory = new Category("New Category", null, 10L, parent);
+
+        categoryRepository.save(newCategory);
+        assertThrows(DataIntegrityViolationException.class,() -> categoryRepository.flush());
+    }
+
+    @DisplayName("N + 1 select")
+    @Test
+    void NplusOneNoProblem() {
+        Category cat = categoryRepository.findById(18L).orElse(null);
+        assertThat(cat).isNotNull();
+        AssertSqlQueriesCount.assertSelectCount(1);
+
+
+        cat.getBooks().forEach(b->{
+            assertThat(b.getName()).isNotNull();
+        });
+
         AssertSqlQueriesCount.assertSelectCount(2);
     }
 }
