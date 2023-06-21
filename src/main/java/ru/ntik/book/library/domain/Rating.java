@@ -14,9 +14,9 @@ import ru.ntik.book.library.util.Checker;
 
 public class Rating {
     @Column(name = COLUMN_VOTE_COUNT_NAME, columnDefinition = COLUMN_VOTE_COUNT_DEFINITION)
-    int voteCount;
+    private int voteCount;
     @Column(name = COLUMN_COMMON_RATING_NAME, columnDefinition = COLUMN_COMMON_RATING_DEFINITION)
-    double commonRating;
+    private double commonRating;
 
     Rating(int voteCount, double commonRating) {
         this.voteCount = voteCount;

@@ -61,6 +61,9 @@ public class BookDefinition extends NamedObject {
     @OrderBy("created DESC" )
     private final Set<BookInstance> instances = new HashSet<>();
 
+    @Column(name = COLUMN_INSTANCE_COUNT_NAME, columnDefinition = COLUMN_INSTANCE_COUNT_DEFINITION)
+    private int instanceCount;
+
     public BookDefinition(String name, String description, Long creator, PrintInfo printInfo,
                           List<Author> authors, Category category) {
         super(name, description, creator);
@@ -72,6 +75,14 @@ public class BookDefinition extends NamedObject {
         rating = new Rating(0, 0.0);
     }
 
+    public Set<Review> getReviews() {
+        return Collections.unmodifiableSet(reviews);
+    }
+
+    public Set<BookInstance> getInstances() {
+        return Collections.unmodifiableSet(instances);
+    }
+
     private void setAuthors(List<Author> authors) {
         Objects.requireNonNull(authors);
         this.authors.addAll(authors);
@@ -80,10 +91,6 @@ public class BookDefinition extends NamedObject {
     private void setPintInfo(PrintInfo printInfo) {
         Objects.requireNonNull(printInfo);
         this.printInfo = printInfo;
-    }
-
-    public Set<Review> getReviews() {
-        return Collections.unmodifiableSet(reviews);
     }
 
     public void setCategory(Category category) {
@@ -118,4 +125,19 @@ public class BookDefinition extends NamedObject {
             rating.setVoteCount(count);
         }
     }
+
+    public void addBookInstance(BookInstance bi) {
+        Objects.requireNonNull(bi);
+        instanceCount += instances.add(bi) ? 1 : 0;
+    }
+
+    public boolean removeBookInstance(BookInstance bi) {
+        Objects.requireNonNull(bi);
+        boolean removed = instances.remove(bi);
+        instanceCount -= removed ? 1 : 0;
+        return removed;
+    }
+
+    private static final String COLUMN_INSTANCE_COUNT_NAME = "instance_count";
+    private static final String COLUMN_INSTANCE_COUNT_DEFINITION = "SMALLINT CHECK(" + COLUMN_INSTANCE_COUNT_NAME + " >= 0) NOT NULL ";;
 }
