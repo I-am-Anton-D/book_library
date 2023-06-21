@@ -12,7 +12,7 @@ import ru.ntik.book.library.domain.BookDefinition;
 import ru.ntik.book.library.domain.Rating;
 import ru.ntik.book.library.domain.Review;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -39,7 +39,7 @@ class ReviewRatingTest {
         assertThat(bd).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
 
-        List<Review> reviews = bd.getReviews();
+        Set<Review> reviews = bd.getReviews();
 
         assertThrows(UnsupportedOperationException.class, () -> reviews.add(null));
         AssertSqlQueriesCount.assertSelectCount(1);
@@ -95,10 +95,10 @@ class ReviewRatingTest {
         assertThat(bd).isNotNull();
         double beforeRating = bd.getRating().getCommonRating();
 
-        List<Review> reviews = bd.getReviews();
+        Set<Review> reviews = bd.getReviews();
         assertThat(reviews).isNotEmpty();
 
-        Review review = reviews.get(0);
+        Review review = reviews.stream().toList().get(0);
 
         review.setText("New Text");
         review.setRating(5);
@@ -180,7 +180,7 @@ class ReviewRatingTest {
         assertThat(bd.getRating().getCommonRating()).isEqualTo(beforeRating);
         assertThat(bd.getRating().getVoteCount()).isEqualTo(beforeCount);
 
-        Review existReview = bd.getReviews().get(0);
+        Review existReview = bd.getReviews().stream().toList().get(0);
         bd.removeReview(existReview);
         bookRepository.save(bd);
         bookRepository.flush();
@@ -200,7 +200,7 @@ class ReviewRatingTest {
         assertThat(bd).isNotNull();
 
         while (!bd.getReviews().isEmpty()) {
-            Review review = bd.getReviews().get(0);
+            Review review = bd.getReviews().stream().toList().get(0);
             bd.removeReview(review);
         }
 

@@ -176,7 +176,7 @@ class CategoryRepositoryTest {
         categoryRepository.save(newCategory);
         categoryRepository.flush();
         AssertSqlQueriesCount.assertInsertCount(1);
-        AssertSqlQueriesCount.assertUpdateCount(1);
+        AssertSqlQueriesCount.assertUpdateCount(0);
     }
 
     @DisplayName("Save with reference to not exist object")

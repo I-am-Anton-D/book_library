@@ -51,10 +51,15 @@ public class BookDefinition extends NamedObject {
     )
     private final Set<BookDefinition> links = new HashSet<>();
 
-    @OneToMany(mappedBy = "bookDefinition", cascade = { CascadeType.ALL }, orphanRemoval = true)
+    @OneToMany(mappedBy = "bookDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @OrderBy("created DESC" )
-    private final List<Review> reviews = new ArrayList<>();
+    private final Set<Review> reviews = new HashSet<>();
+
+    @OneToMany(mappedBy = "bookDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OrderBy("created DESC" )
+    private final Set<BookInstance> instances = new HashSet<>();
 
     public BookDefinition(String name, String description, Long creator, PrintInfo printInfo,
                           List<Author> authors, Category category) {
@@ -77,8 +82,8 @@ public class BookDefinition extends NamedObject {
         this.printInfo = printInfo;
     }
 
-    public List<Review> getReviews() {
-        return Collections.unmodifiableList(reviews);
+    public Set<Review> getReviews() {
+        return Collections.unmodifiableSet(reviews);
     }
 
     public void setCategory(Category category) {
