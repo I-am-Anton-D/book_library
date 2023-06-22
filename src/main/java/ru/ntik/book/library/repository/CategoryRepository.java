@@ -27,13 +27,13 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query(value = """
         WITH RECURSIVE category_link(id, name, parent_id, path, level) AS (
             SELECT id, name, parent_id, '/' || name, 0
-            FROM category WHERE parent_id is null
-            union all
-            select c.id, c.name, c.parent_id, cl.path || '/' || c.name, cl.level + 1
-            from category_link cl
-            join category c on cl.id = c.parent_id)
-        select id, name as cat_name, parent_id, path, level
-        from category_link  order by level
+            FROM category WHERE parent_id IS NULL
+            UNION ALL
+            SELECT c.id, c.name, c.parent_id, cl.path || '/' || c.name, cl.level + 1
+            FROM category_link cl
+            JOIN category c ON cl.id = c.parent_id)
+        SELECT id, name AS cat_name, parent_id, path, level
+        FROM category_link ORDER BY level
         """, nativeQuery = true)
     List<Object[]> fetchCategoryTree();
 }

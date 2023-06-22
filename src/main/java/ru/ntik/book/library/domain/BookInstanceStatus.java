@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.*;
 import ru.ntik.book.library.domain.enums.BookInstanceState;
 
 import java.time.LocalDate;
@@ -17,6 +17,9 @@ import static ru.ntik.book.library.util.Constants.BOOK_INSTANCE_STATUS_REGION_NA
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
         region = BOOK_INSTANCE_STATUS_REGION_NAME)
+
+@OptimisticLocking(type = OptimisticLockType.DIRTY)
+@DynamicUpdate
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
