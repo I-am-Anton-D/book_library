@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
+import ru.ntik.book.library.domain.enums.BookInstanceState;
 
 import java.util.*;
 
@@ -33,6 +34,9 @@ public class BookDefinition extends NamedObject {
 
     @Embedded
     private Rating rating;
+
+    @Embedded
+    private InstancesInfo instancesInfo;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(nullable = false)
@@ -61,9 +65,6 @@ public class BookDefinition extends NamedObject {
     @OrderBy("created DESC" )
     private final Set<BookInstance> instances = new HashSet<>();
 
-    @Column(name = COLUMN_INSTANCE_COUNT_NAME, columnDefinition = COLUMN_INSTANCE_COUNT_DEFINITION)
-    private int instanceCount;
-
     public BookDefinition(String name, String description, Long creator, PrintInfo printInfo,
                           List<Author> authors, Category category) {
         super(name, description, creator);
@@ -72,7 +73,8 @@ public class BookDefinition extends NamedObject {
         setCategory(category);
         setAuthors(authors);
 
-        rating = new Rating(0, 0.0);
+        rating = new Rating();
+        instancesInfo = new InstancesInfo();
     }
 
     public Set<Review> getReviews() {
@@ -128,16 +130,17 @@ public class BookDefinition extends NamedObject {
 
     public void addBookInstance(BookInstance bi) {
         Objects.requireNonNull(bi);
-        instanceCount += instances.add(bi) ? 1 : 0;
+        if (instances.add(bi)) {
+            instancesInfo.onAddInstance();
+        }
     }
 
     public boolean removeBookInstance(BookInstance bi) {
         Objects.requireNonNull(bi);
         boolean removed = instances.remove(bi);
-        instanceCount -= removed ? 1 : 0;
+        if (removed) {
+            instancesInfo.onRemoveInstance(bi.getStatus().getState() == BookInstanceState.ON_OWNER);
+        }
         return removed;
     }
-
-    private static final String COLUMN_INSTANCE_COUNT_NAME = "instance_count";
-    private static final String COLUMN_INSTANCE_COUNT_DEFINITION = "SMALLINT CHECK(" + COLUMN_INSTANCE_COUNT_NAME + " >= 0) NOT NULL ";;
 }

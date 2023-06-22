@@ -9,13 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.BookDefinition;
-import ru.ntik.book.library.domain.Rating;
 import ru.ntik.book.library.domain.Review;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
@@ -58,34 +56,6 @@ class ReviewRatingTest {
         assertThat(bd.getRating().getCommonRating()).isPositive();
         assertThat(bd.getRating().getVoteCount()).isPositive();
         AssertSqlQueriesCount.assertSelectCount(1);
-    }
-
-    @DisplayName("Set wrong rating")
-    @Test
-    void wrongRatingSet() {
-        BookDefinition bd = bookRepository.findById(1L).orElse(null);
-        assertThat(bd).isNotNull();
-        Rating rating = bd.getRating();
-
-        assertThrows(IllegalArgumentException.class, ()-> rating.setCommonRating(-2.0));
-        assertThrows(IllegalArgumentException.class, ()-> rating.setCommonRating(6.0));
-        assertThatCode(()-> rating.setCommonRating(0.0)).doesNotThrowAnyException();
-        assertThatCode(()-> rating.setCommonRating(5.0)).doesNotThrowAnyException();
-
-        assertThrows(IllegalArgumentException.class, ()-> rating.setVoteCount(-2));
-        assertThatCode(()-> rating.setVoteCount(0)).doesNotThrowAnyException();
-    }
-
-    @DisplayName("Reset to zero")
-    @Test
-    void resetToZero() {
-        BookDefinition bd = bookRepository.findById(1L).orElse(null);
-        assertThat(bd).isNotNull();
-        Rating rating = bd.getRating();
-        rating.resetToZero();
-
-        assertThat(rating.getCommonRating()).isEqualTo(0.0);
-        assertThat(rating.getVoteCount()).isZero();
     }
 
     @DisplayName("Update review")

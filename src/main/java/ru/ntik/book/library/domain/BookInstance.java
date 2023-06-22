@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
+import ru.ntik.book.library.domain.enums.BookInstanceState;
 
 import java.util.Objects;
 
@@ -43,5 +44,24 @@ public class BookInstance extends StoredObject {
         this.isCompany = isCompany;
         this.bookDefinition = bookDefinition;
         this.status = new BookInstanceStatus(creator);
+    }
+
+    public void moveToUser(Long toUser) {
+        Objects.requireNonNull(toUser);
+
+        if (status.getState() == BookInstanceState.ON_OWNER) {
+            bookDefinition.getInstancesInfo().decrementFreeCount();
+        }
+
+        if (status.getState() == BookInstanceState.ON_USER && toUser.equals(status.getToUser()))  {
+            throw new IllegalStateException("Attempt to transfer to the same user");
+        }
+
+        status.moveToUser(toUser);
+    }
+
+    public void moveToOwner() {
+        bookDefinition.getInstancesInfo().incrementFreeCount();
+        status.moveToOwner();
     }
 }

@@ -33,7 +33,7 @@ public class BookInstanceStatus extends StoredObject{
 
     BookInstanceStatus(Long creator) {
         super(creator);
-        this.state = BookInstanceState.JUST_ADDED;
+        this.state = BookInstanceState.ON_OWNER;
         this.movedToUserDate = null;
         this.toUser = null;
         this.movedToOwnerDate = null;
