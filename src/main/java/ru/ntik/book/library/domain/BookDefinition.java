@@ -65,6 +65,11 @@ public class BookDefinition extends NamedObject {
     @OrderBy("created DESC" )
     private final Set<BookInstance> instances = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "bookDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OrderBy("created DESC" )
+    private Set<BookOrder> bookOrders = new LinkedHashSet<>();
+
     public BookDefinition(String name, String description, Long creator, PrintInfo printInfo,
                           List<Author> authors, Category category) {
         super(name, description, creator);

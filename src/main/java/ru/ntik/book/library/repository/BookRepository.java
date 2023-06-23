@@ -18,6 +18,7 @@ public interface BookRepository extends JpaRepository<BookDefinition, Long> {
             "join fetch b.category " +
             "join fetch b.links " +
             "join fetch b.instances " +
+            "join fetch b.bookOrders " +
             "join fetch b.reviews WHERE b.id = :id")
     Optional<BookDefinition> fetchById(@Param("id") Long id);
 }

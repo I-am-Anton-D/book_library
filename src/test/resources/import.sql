@@ -50,3 +50,6 @@ INSERT INTO public.book_instance (is_company, book_definition_id, created, creat
 INSERT INTO public.book_instance (is_company, book_definition_id, created, creator, id, owner, status_id) VALUES (false, 2, '2023-06-21 15:41:19.000000', 10, 27, 12, 32);
 
 
+INSERT INTO public.book_order (book_definition_id, created, creator, id) VALUES (1, '2023-06-15 11:52:30.000000', 12, 33);
+INSERT INTO public.book_order (book_definition_id, created, creator, id) VALUES (1, '2023-06-15 11:52:30.000000', 12, 34);
+INSERT INTO public.book_order (book_definition_id, created, creator, id) VALUES (1, '2023-06-15 11:52:30.000000', 12, 35);

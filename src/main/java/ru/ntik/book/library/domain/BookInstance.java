@@ -17,7 +17,7 @@ import static ru.ntik.book.library.util.Constants.BOOK_INSTANCE_REGION_NAME;
 @Immutable
 
 @Cacheable
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY,
         region = BOOK_INSTANCE_REGION_NAME)
 
 @Getter

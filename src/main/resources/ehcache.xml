@@ -54,4 +54,9 @@
         <value-type> ru.ntik.book.library.domain.BookInstance</value-type>
     </cache>
 
+    <cache alias="ru.ntik.book.library.domain.BookOrder" uses-template="default">
+        <key-type>java.lang.Long</key-type>
+        <value-type> ru.ntik.book.library.domain.BookOrder</value-type>
+    </cache>
+
 </config>
