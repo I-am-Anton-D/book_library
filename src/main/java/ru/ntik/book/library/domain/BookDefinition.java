@@ -38,6 +38,10 @@ public class BookDefinition extends NamedObject {
     @Embedded
     private InstancesInfo instancesInfo;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] mainImage;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(nullable = false)
     private Category category;
@@ -103,6 +107,10 @@ public class BookDefinition extends NamedObject {
     public void setCategory(Category category) {
         Objects.requireNonNull(category);
         this.category = category;
+    }
+
+    public void setMainImage(byte[] image) {
+        this.mainImage = image;
     }
 
     public void addReview(Review review) {

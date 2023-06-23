@@ -151,6 +151,9 @@ class BookRepositoryFetchTest {
 
         assertThat(bd.getBookOrders()).isNotEmpty();
         AssertSqlQueriesCount.assertSelectCount(8);
+
+        assertThat(bd.getMainImage()).isNull();
+        AssertSqlQueriesCount.assertSelectCount(9);
     }
 
     @DisplayName("Eager Load")
@@ -194,5 +197,4 @@ class BookRepositoryFetchTest {
         added = bd.getLinks().add(fromDb);
         assertThat(added).isFalse();
     }
-
 }
