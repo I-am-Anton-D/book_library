@@ -37,16 +37,16 @@ INSERT INTO public.review (rating, book_definition_id, created, creator, id, tex
 INSERT INTO public.review (rating, book_definition_id, created, creator, id, text) VALUES (3, 1, '2023-06-18 14:46:48.000000', 10, 15, 'Some Cool Review 2');
 INSERT INTO public.review (rating, book_definition_id, created, creator, id, text) VALUES (2, 1, '2023-06-18 14:46:47.000000', 10, 16, 'Some Cool Review 3');
 
-INSERT INTO public.book_instance_status (moved_to_owner_date, moved_to_user_date, created, creator, id, to_user, state) VALUES (null, null, '2023-06-21 16:37:35.000000', 10, 28, null, 'ON_OWNER');
-INSERT INTO public.book_instance_status (moved_to_owner_date, moved_to_user_date, created, creator, id, to_user, state) VALUES (null, null, '2023-06-21 16:37:35.000000', 10, 29, null, 'ON_OWNER');
-INSERT INTO public.book_instance_status (moved_to_owner_date, moved_to_user_date, created, creator, id, to_user, state) VALUES (null, null, '2023-06-21 16:37:35.000000', 10, 30, null, 'ON_OWNER');
-INSERT INTO public.book_instance_status (moved_to_owner_date, moved_to_user_date, created, creator, id, to_user, state) VALUES (null, null, '2023-06-21 16:37:35.000000', 10, 31, null, 'ON_OWNER');
-INSERT INTO public.book_instance_status (moved_to_owner_date, moved_to_user_date, created, creator, id, to_user, state) VALUES (null, null, '2023-06-21 16:37:35.000000', 10, 32, null, 'ON_OWNER');
+INSERT INTO public.book_status (moved_to_owner_date, moved_to_user_date, created, creator, id, to_user, state) VALUES (null, null, '2023-06-21 16:37:35.000000', 10, 28, null, 'ON_OWNER');
+INSERT INTO public.book_status (moved_to_owner_date, moved_to_user_date, created, creator, id, to_user, state) VALUES (null, null, '2023-06-21 16:37:35.000000', 10, 29, null, 'ON_OWNER');
+INSERT INTO public.book_status (moved_to_owner_date, moved_to_user_date, created, creator, id, to_user, state) VALUES (null, null, '2023-06-21 16:37:35.000000', 10, 30, null, 'ON_OWNER');
+INSERT INTO public.book_status (moved_to_owner_date, moved_to_user_date, created, creator, id, to_user, state) VALUES (null, null, '2023-06-21 16:37:35.000000', 10, 31, null, 'ON_OWNER');
+INSERT INTO public.book_status (moved_to_owner_date, moved_to_user_date, created, creator, id, to_user, state) VALUES (null, null, '2023-06-21 16:37:35.000000', 10, 32, null, 'ON_OWNER');
 
 INSERT INTO public.book_instance (is_company, book_definition_id, created, creator, id, owner, status_id) VALUES (false, 1, '2023-06-21 15:41:19.000000', 10, 23, 12, 28);
 INSERT INTO public.book_instance (is_company, book_definition_id, created, creator, id, owner, status_id) VALUES (false, 1, '2023-06-21 15:41:19.000000', 10, 24, 12, 29);
 INSERT INTO public.book_instance (is_company, book_definition_id, created, creator, id, owner, status_id) VALUES (false, 1, '2023-06-21 15:41:19.000000', 10, 25, 12, 30);
 INSERT INTO public.book_instance (is_company, book_definition_id, created, creator, id, owner, status_id) VALUES (false, 2, '2023-06-21 15:41:19.000000', 10, 26, 12, 31);
-INSERT INTO public.book_instance (is_company, book_definition_id, created, creator, id, owner, status_id) VALUES (false, 3, '2023-06-21 15:41:19.000000', 10, 27, 12, 32);
+INSERT INTO public.book_instance (is_company, book_definition_id, created, creator, id, owner, status_id) VALUES (false, 2, '2023-06-21 15:41:19.000000', 10, 27, 12, 32);
 
 

@@ -1,32 +1,34 @@
 package ru.ntik.book.library.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.*;
-import ru.ntik.book.library.domain.enums.BookInstanceState;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.OptimisticLockType;
+import org.hibernate.annotations.OptimisticLocking;
+import org.hibernate.envers.Audited;
+import ru.ntik.book.library.domain.enums.BookState;
 
 import java.time.LocalDate;
 
-import static ru.ntik.book.library.util.Constants.BOOK_INSTANCE_STATUS_REGION_NAME;
-
 @Entity
 
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE,
-        region = BOOK_INSTANCE_STATUS_REGION_NAME)
+@Audited
 
 @OptimisticLocking(type = OptimisticLockType.DIRTY)
 @DynamicUpdate
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BookInstanceStatus extends StoredObject{
+public class BookStatus extends StoredObject{
+
     @Enumerated(EnumType.STRING)
     @Column(name = "state", length = 20)
-    private BookInstanceState state;
+    private BookState state;
 
     private LocalDate movedToUserDate;
 
@@ -34,27 +36,25 @@ public class BookInstanceStatus extends StoredObject{
 
     private LocalDate movedToOwnerDate;
 
-    BookInstanceStatus(Long creator) {
+    BookStatus(Long creator) {
         super(creator);
-        this.state = BookInstanceState.ON_OWNER;
+        this.state = BookState.ON_OWNER;
         this.movedToUserDate = null;
         this.toUser = null;
         this.movedToOwnerDate = null;
     }
 
-    public BookInstanceStatus moveToUser(Long user) {
-        state = BookInstanceState.ON_USER;
+    public void moveToUser(Long user) {
+        state = BookState.ON_USER;
         movedToUserDate = LocalDate.now();
         toUser = user;
         movedToOwnerDate = null;
-        return this;
     }
 
-    public BookInstanceStatus moveToOwner() {
-        state = BookInstanceState.ON_OWNER;
+    public void moveToOwner() {
+        state = BookState.ON_OWNER;
         movedToUserDate = null;
         toUser = null;
         movedToOwnerDate = LocalDate.now();
-        return this;
     }
 }

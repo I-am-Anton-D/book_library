@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.BookDefinition;
 import ru.ntik.book.library.domain.BookInstance;
-import ru.ntik.book.library.domain.enums.BookInstanceState;
+import ru.ntik.book.library.domain.enums.BookState;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -99,13 +99,12 @@ class BookInstanceAndStatusTest {
     @DisplayName("Move to User and back to Owner")
     @Test
     void moveToUserAndBack() {
-        BookDefinition bd = bookRepository.findById(1L).orElse(null);
+        BookDefinition bd = bookRepository.findById(2L).orElse(null);
         assertThat(bd).isNotNull();
         AssertSqlQueriesCount.assertSelectCount(1);
 
         assertThat(bd.getInstancesInfo().getInstanceCount()).isNotZero();
         int free = bd.getInstancesInfo().getFreeCount();
-        int count = bd.getInstancesInfo().getInstanceCount();
 
         BookInstance bi = bd.getInstances().iterator().next();
         AssertSqlQueriesCount.assertSelectCount(2);
@@ -118,7 +117,7 @@ class BookInstanceAndStatusTest {
         AssertSqlQueriesCount.assertUpdateCount(2);
 
         bi = bd.getInstances().iterator().next();
-        assertThat(bi.getStatus().getState()).isEqualTo(BookInstanceState.ON_USER);
+        assertThat(bi.getStatus().getState()).isEqualTo(BookState.ON_USER);
         assertThat(bi.getStatus().getToUser()).isEqualTo(12L);
         assertThat(bi.getStatus().getMovedToUserDate()).isNotNull();
         assertThat(bi.getStatus().getMovedToOwnerDate()).isNull();
@@ -131,7 +130,7 @@ class BookInstanceAndStatusTest {
         bi.moveToOwner();
         assertThat(bd.getInstancesInfo().getFreeCount()).isEqualTo(free);
 
-        assertThat(bi.getStatus().getState()).isEqualTo(BookInstanceState.ON_OWNER);
+        assertThat(bi.getStatus().getState()).isEqualTo(BookState.ON_OWNER);
         assertThat(bi.getStatus().getToUser()).isNull();
         assertThat(bi.getStatus().getMovedToUserDate()).isNull();
         assertThat(bi.getStatus().getMovedToOwnerDate()).isNotNull();
@@ -145,6 +144,12 @@ class BookInstanceAndStatusTest {
         bd = bookRepository.save(bd);
         bookRepository.flush();
 
-        assertThat(bd.getInstancesInfo().getInstanceCount()).isEqualTo(count - 1);
+        bi = bd.getInstances().iterator().next();
+        assertThat(bi.getStatus().getState()).isEqualTo(BookState.ON_OWNER);
+        bd.removeBookInstance(bi);
+        bd = bookRepository.save(bd);
+        bookRepository.flush();
+
+        assertThat(bd.getInstancesInfo().getInstanceCount()).isZero();
     }
 }

@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
-import ru.ntik.book.library.domain.enums.BookInstanceState;
+import ru.ntik.book.library.domain.enums.BookState;
 
 import java.util.*;
 
@@ -58,12 +58,12 @@ public class BookDefinition extends NamedObject {
     @OneToMany(mappedBy = "bookDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @OrderBy("created DESC" )
-    private final Set<Review> reviews = new HashSet<>();
+    private final Set<Review> reviews = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "bookDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @OrderBy("created DESC" )
-    private final Set<BookInstance> instances = new HashSet<>();
+    private final Set<BookInstance> instances = new LinkedHashSet<>();
 
     public BookDefinition(String name, String description, Long creator, PrintInfo printInfo,
                           List<Author> authors, Category category) {
@@ -139,7 +139,7 @@ public class BookDefinition extends NamedObject {
         Objects.requireNonNull(bi);
         boolean removed = instances.remove(bi);
         if (removed) {
-            instancesInfo.onRemoveInstance(bi.getStatus().getState() == BookInstanceState.ON_OWNER);
+            instancesInfo.onRemoveInstance(bi.getStatus().getState() == BookState.ON_OWNER);
         }
         return removed;
     }

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
-import ru.ntik.book.library.domain.enums.BookInstanceState;
+import ru.ntik.book.library.domain.enums.BookState;
 
 import java.util.Objects;
 
@@ -34,7 +34,7 @@ public class BookInstance extends StoredObject {
     @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(nullable = false)
-    private BookInstanceStatus status;
+    private BookStatus status;
 
     public BookInstance(Long owner, Long creator, boolean isCompany, BookDefinition bookDefinition) {
         super(creator);
@@ -43,17 +43,17 @@ public class BookInstance extends StoredObject {
         this.owner = owner;
         this.isCompany = isCompany;
         this.bookDefinition = bookDefinition;
-        this.status = new BookInstanceStatus(creator);
+        this.status = new BookStatus(creator);
     }
 
     public void moveToUser(Long toUser) {
         Objects.requireNonNull(toUser);
 
-        if (status.getState() == BookInstanceState.ON_OWNER) {
+        if (status.getState() == BookState.ON_OWNER) {
             bookDefinition.getInstancesInfo().decrementFreeCount();
         }
 
-        if (status.getState() == BookInstanceState.ON_USER && toUser.equals(status.getToUser()))  {
+        if (status.getState() == BookState.ON_USER && toUser.equals(status.getToUser()))  {
             throw new IllegalStateException("Attempt to transfer to the same user");
         }
 
