@@ -38,9 +38,11 @@ public class BookDefinition extends NamedObject {
     @Embedded
     private InstancesInfo instancesInfo;
 
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    private byte[] mainImage;
+    @OptimisticLock(excluded = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinFormula(value = "(SELECT bi.id FROM book_image bi WHERE " +
+            "bi.book_definition_id = id AND bi.main_image = true)")
+    private BookImage mainImage;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(nullable = false)
@@ -72,7 +74,12 @@ public class BookDefinition extends NamedObject {
     @OneToMany(mappedBy = "bookDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @OrderBy("created DESC" )
-    private Set<BookOrder> bookOrders = new LinkedHashSet<>();
+    private final Set<BookOrder> bookOrders = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "bookDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OrderBy("created DESC" )
+    private final Set<BookImage> images = new LinkedHashSet<>();
 
     public BookDefinition(String name, String description, Long creator, PrintInfo printInfo,
                           List<Author> authors, Category category) {
@@ -107,10 +114,6 @@ public class BookDefinition extends NamedObject {
     public void setCategory(Category category) {
         Objects.requireNonNull(category);
         this.category = category;
-    }
-
-    public void setMainImage(byte[] image) {
-        this.mainImage = image;
     }
 
     public void addReview(Review review) {
