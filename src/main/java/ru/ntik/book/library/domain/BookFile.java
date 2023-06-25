@@ -22,11 +22,6 @@ public class BookFile extends NamedObject {
     @Column(nullable = false)
     private FileType type;
 
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(nullable = false)
-    private byte[] bytes;
-
     @Column(nullable = false)
     private String location;
 
@@ -34,16 +29,14 @@ public class BookFile extends NamedObject {
     private String fileName;
 
     public BookFile(String name, String description, Long creator,
-                    FileType type, byte[] bytes, String location, String fileName) {
+                    FileType type, String location, String fileName) {
         super(name, description, creator);
         Objects.requireNonNull(type);
-        Objects.requireNonNull(bytes);
         Objects.requireNonNull(location);
         Objects.requireNonNull(fileName);
 
 
         this.type = type;
-        this.bytes = bytes;
         this.location = Checker.checkStringLength(location, 1,  DEFAULT_VARCHAR_LENGTH);
         this.fileName = Checker.checkStringLength(fileName, 1,  DEFAULT_VARCHAR_LENGTH);
     }
