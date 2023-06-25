@@ -6,6 +6,7 @@ import ru.ntik.book.library.domain.Category;
 import ru.ntik.book.library.domain.PrintInfo;
 import ru.ntik.book.library.domain.enums.BookLanguage;
 
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 
@@ -27,5 +28,16 @@ public class TestUtils {
 
         PrintInfo po = new PrintInfo(RELEASE_YEAR, COVER_TYPE, ISBN, PAGE_COUNT, BOOK_LANGUAGE, null);
         return new BookDefinition(BOOK_NAME, BOOK_DESC, CREATOR, po, Collections.emptyList(), category);
+    }
+
+    public static byte[] getImgBytes(String fileName, ClassLoader classLoader) {
+        try (InputStream stream = classLoader.getResourceAsStream(fileName)) {
+            assert stream != null;
+
+            return stream.readAllBytes();
+
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 }

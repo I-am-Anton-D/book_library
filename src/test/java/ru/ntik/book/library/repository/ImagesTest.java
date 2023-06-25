@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.BookDefinition;
 import ru.ntik.book.library.domain.BookImage;
+import ru.ntik.book.library.testutils.TestUtils;
 
 import java.io.InputStream;
 
@@ -43,11 +44,11 @@ class ImagesTest {
         MediaType type = MediaType.IMAGE_JPEG;
 
         String fileName = "main.jpg";
-        byte[] bytes = getImgBytes(fileName);
+        byte[] bytes = TestUtils.getImgBytes(fileName, getClass().getClassLoader());
         BookImage mainImage = new BookImage(10L, fileName, bytes, true, bd);
 
         fileName = "image2.jpg";
-        bytes = getImgBytes(fileName);
+        bytes = TestUtils.getImgBytes(fileName, getClass().getClassLoader());
         BookImage anotherImage = new BookImage(10L, fileName, bytes, false, bd);
 
         bd.getImages().add(mainImage);
@@ -75,14 +76,5 @@ class ImagesTest {
     }
 
 
-    private byte[] getImgBytes(String fileName) {
-        try (InputStream stream = getClass().getClassLoader().getResourceAsStream(fileName)) {
-            assert stream != null;
 
-            return stream.readAllBytes();
-
-        } catch (Exception ignored) {
-        }
-        return null;
-    }
 }

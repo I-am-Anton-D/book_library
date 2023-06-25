@@ -5,6 +5,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
+import ru.ntik.book.library.util.Checker;
+
+import java.util.Objects;
+
+import static ru.ntik.book.library.util.Constants.DEFAULT_VARCHAR_LENGTH;
 
 @Entity
 @Immutable
@@ -18,6 +23,7 @@ public class BookImage extends StoredObject{
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
+    @Column(nullable = false)
     private byte[] bytes;
 
     private boolean mainImage = false;
@@ -28,7 +34,12 @@ public class BookImage extends StoredObject{
 
     public BookImage(Long creator, String fileName, byte[] bytes, boolean mainImage, BookDefinition bd) {
         super(creator);
-        this.fileName = fileName;
+        Objects.requireNonNull(fileName);
+        Objects.requireNonNull(bytes);
+        Objects.requireNonNull(bd);
+
+        //Pattern
+        this.fileName = Checker.checkStringLength(fileName, 1,  DEFAULT_VARCHAR_LENGTH);
         this.bytes = bytes;
         this.mainImage = mainImage;
         this.bookDefinition = bd;
