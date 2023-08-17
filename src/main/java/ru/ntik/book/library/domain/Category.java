@@ -40,6 +40,20 @@ public class Category extends NamedObject {
     @OrderBy("name")
     private Set<BookDefinition> books = new LinkedHashSet<>();
 
+    /**
+     * Creates root Category (with null parent).
+     * @param name String - category name
+     * @param description String - category description
+     * @param creator Long
+     */
+    public static Category createRootCategory(String name, String description, Long creator) {
+        return new Category(name, description, creator);
+    }
+    // Made no parent constructor private to make root Category creation explicit
+    private Category(String name, String description, Long creator) {
+        super(name, description, creator);
+        this.parent = null;
+    }
     public Category(String name, String description, Long creator, Category parent) {
         super(name, description, creator);
 
