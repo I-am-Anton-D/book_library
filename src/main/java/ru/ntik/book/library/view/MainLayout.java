@@ -1,5 +1,6 @@
 package ru.ntik.book.library.view;
 
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -47,9 +48,11 @@ public class MainLayout extends HorizontalLayout {
         // Left menu
         leftMenu.add(logo);
         initCategories();
+        categoryTree.setId("category-tree");
         categoryTree.addHierarchyColumn(Category::getName).setHeader("Категории");
         categoryTree.setDataProvider(new TreeDataProvider<>(treeData));
         leftMenu.add(categoryTree);
+        addCategoryButton.addClickListener(this::openCreateCategoryView);
         leftMenu.add(addCategoryButton);
         add(leftMenu);
 
@@ -69,6 +72,11 @@ public class MainLayout extends HorizontalLayout {
         add(mainRegion);
     }
 
+    private void openCreateCategoryView(ClickEvent<Button> e) {
+        // test method, replace with actual content
+        addCategoryButton.setText("Категория добавлена");
+    }
+
     private void initCategories() {
         categoryService.tryCreateRootCategory();
         categories = categoryService.fetchAll();
@@ -77,16 +85,16 @@ public class MainLayout extends HorizontalLayout {
         List<Category> rootCategories = categories.stream().
                 filter(cat -> cat.getParent() != null && cat.getParent().getParent() == null).toList();
         treeData.addRootItems(rootCategories);
-        addChildrenRecursivley(rootCategories, this::getSubcategories);
+        addChildrenRecursively(rootCategories, this::getSubcategories);
     }
 
-    private void addChildrenRecursivley(List<Category> categories, ValueProvider<Category, List<Category>> childProvider) {
+    private void addChildrenRecursively(List<Category> categories, ValueProvider<Category, List<Category>> childProvider) {
         categories.forEach(category ->
         {
             List<Category> chidren = childProvider.apply(category);
             treeData.addItems(category, chidren);
             if (!chidren.isEmpty()) {
-                addChildrenRecursivley(chidren, childProvider);
+                addChildrenRecursively(chidren, childProvider);
             }
         });
     }
