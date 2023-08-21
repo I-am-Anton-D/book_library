@@ -25,21 +25,21 @@ import java.util.List;
 public class MainLayout extends HorizontalLayout {
     @Autowired
     private CategoryService categoryService;
-    TreeData<Category> treeData = new TreeData<>();
-    TreeGrid<Category> categoryTree = new TreeGrid<>();
+    private TreeData<Category> treeData = new TreeData<>();
+    private TreeGrid<Category> categoryTree = new TreeGrid<>();
     private List<Category> categories = null;
 
     // UI components
-    VerticalLayout leftMenu = new VerticalLayout();
-    Image logo = new Image(
+    private VerticalLayout leftMenu = new VerticalLayout();
+    private Image logo = new Image(
             "https://static.tildacdn.com/tild3262-3336-4562-a164-326236316164/Frame.svg", "logo");
-    Button addCategoryButton = new Button("Добавить категорию");
-    VerticalLayout mainRegion = new VerticalLayout();
-    HorizontalLayout searchRegion = new HorizontalLayout();
-    TextField searchBox = new TextField();
-    Button searchButton = new Button("Найти");
-    VerticalLayout contentRegion = new VerticalLayout();
-    Image contentMock = new Image("https://www.mrw.it/img/cope/0iwkf4_1609360688.jpg", "placeholder");
+    private Button addCategoryButton = new Button("Добавить категорию");
+    private VerticalLayout mainRegion = new VerticalLayout();
+    private HorizontalLayout searchRegion = new HorizontalLayout();
+    private TextField searchBox = new TextField();
+    private Button searchButton = new Button("Найти");
+    private VerticalLayout contentRegion = new VerticalLayout();
+    private Image contentMock = new Image("https://www.mrw.it/img/cope/0iwkf4_1609360688.jpg", "placeholder");
 
     @Autowired
     MainLayout(CategoryService categoryService) {

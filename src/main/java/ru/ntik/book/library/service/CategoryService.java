@@ -34,14 +34,18 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Optional<Category> find(long id) { return categoryRepository.findById(id); }
+    /**
+     *
+     * @param id for desired category
+     * @return Category object or null
+     */
+    public Category find(long id) { return categoryRepository.findById(id).orElse(null); }
     public Category findRoot() { return categoryRepository.findRoot(); }
     public void save(Category category) {
-        this.categoryRepository.saveAndFlush(category);
+        this.categoryRepository.save(category);
     }
 
     public void remove(Category category) {
         this.categoryRepository.delete(category);
-        this.categoryRepository.flush();
     }
 }
