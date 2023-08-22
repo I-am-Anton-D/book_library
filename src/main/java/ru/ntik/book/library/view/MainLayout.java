@@ -17,59 +17,58 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.ntik.book.library.domain.Category;
 import ru.ntik.book.library.service.CategoryService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Route("")
 @SpringComponent
 @UIScope
 public class MainLayout extends HorizontalLayout {
-    @Autowired
-    private CategoryService categoryService;
-    private TreeData<Category> treeData = new TreeData<>();
-    private TreeGrid<Category> categoryTree = new TreeGrid<>();
-    private List<Category> categories = null;
+
+    private final CategoryService categoryService;
+    private final TreeData<Category> treeData = new TreeData<>();
+    private final TreeGrid<Category> categoryTree = new TreeGrid<>();
+    private final List<Category> categories = new ArrayList<>();
 
     // UI components
-    private VerticalLayout leftMenu = new VerticalLayout();
-    private Image logo = new Image(
+    private final VerticalLayout leftMenu = new VerticalLayout();
+    private final Image logo = new Image(
             "https://static.tildacdn.com/tild3262-3336-4562-a164-326236316164/Frame.svg", "logo");
-    private Button addCategoryButton = new Button("Добавить категорию");
-    private VerticalLayout mainRegion = new VerticalLayout();
-    private HorizontalLayout searchRegion = new HorizontalLayout();
-    private TextField searchBox = new TextField();
-    private Button searchButton = new Button("Найти");
-    private VerticalLayout contentRegion = new VerticalLayout();
-    private Image contentMock = new Image("https://www.mrw.it/img/cope/0iwkf4_1609360688.jpg", "placeholder");
+    private final Button addCategoryButton = new Button("Добавить категорию");
+    private final TextField searchBox = new TextField();
+    private final Button searchButton = new Button("Найти");
+    private final Image contentMock = new Image("https://www.mrw.it/img/cope/0iwkf4_1609360688.jpg", "placeholder");
 
     @Autowired
     MainLayout(CategoryService categoryService) {
         this.categoryService = categoryService;
+        initCategories();
 
         // Left menu
         leftMenu.add(logo);
-        initCategories();
-        categoryTree.setId("category-tree");
-        categoryTree.addHierarchyColumn(Category::getName).setHeader("Категории");
-        categoryTree.setDataProvider(new TreeDataProvider<>(treeData));
         leftMenu.add(categoryTree);
-        addCategoryButton.addClickListener(this::openCreateCategoryView);
         leftMenu.add(addCategoryButton);
-        add(leftMenu);
 
-        // Main region
+        addCategoryButton.addClickListener(this::openCreateCategoryView);
+
         // - Search area
-        mainRegion.setMinWidth("75%");
-        searchRegion.setWidth("100%");
         searchBox.setMinWidth("75%");
         searchBox.setId("search-bar");
+
+        HorizontalLayout searchRegion = new HorizontalLayout();
+        searchRegion.setWidth("100%");
         searchRegion.add(searchBox);
         searchRegion.add(searchButton);
-        mainRegion.add(searchRegion);
+
         // - Content
         contentMock.setWidth("80%");
+        VerticalLayout contentRegion = new VerticalLayout();
         contentRegion.add(contentMock);
-        mainRegion.add(contentRegion);
-        add(mainRegion);
+
+        VerticalLayout mainRegion = new VerticalLayout();
+        mainRegion.setMinWidth("75%");
+        mainRegion.add(searchRegion, contentRegion);
+        add(leftMenu, mainRegion);
     }
 
     private void openCreateCategoryView(ClickEvent<Button> e) {
@@ -78,23 +77,25 @@ public class MainLayout extends HorizontalLayout {
     }
 
     private void initCategories() {
-        categoryService.tryCreateRootCategory();
-        categories = categoryService.fetchAll();
+        categories.addAll(categoryService.findAll());
 
         // getting first children of root
         List<Category> rootCategories = categories.stream().
                 filter(cat -> cat.getParent() != null && cat.getParent().getParent() == null).toList();
         treeData.addRootItems(rootCategories);
         addChildrenRecursively(rootCategories, this::getSubcategories);
+
+        categoryTree.setId("category-tree");
+        categoryTree.addHierarchyColumn(Category::getName).setHeader("Категории");
+        categoryTree.setDataProvider(new TreeDataProvider<>(treeData));
     }
 
     private void addChildrenRecursively(List<Category> categories, ValueProvider<Category, List<Category>> childProvider) {
-        categories.forEach(category ->
-        {
-            List<Category> chidren = childProvider.apply(category);
-            treeData.addItems(category, chidren);
-            if (!chidren.isEmpty()) {
-                addChildrenRecursively(chidren, childProvider);
+        categories.forEach(category -> {
+            List<Category> children = childProvider.apply(category);
+            treeData.addItems(category, children);
+            if (!children.isEmpty()) {
+                addChildrenRecursively(children, childProvider);
             }
         });
     }

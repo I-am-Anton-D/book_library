@@ -25,7 +25,7 @@ class CategoryServiceTest {
     @Test
     void smokeTest() {
         assertThat(categoryService).isNotNull();
-        assertThatCode(()->categoryService.find(1)).doesNotThrowAnyException();
+        assertThatCode(()->categoryService.findById(1)).doesNotThrowAnyException();
     }
 
     @DisplayName("Создание корневой категории")
@@ -50,7 +50,7 @@ class CategoryServiceTest {
         assertThatCode(()->categoryService.save(category)).doesNotThrowAnyException();
         Long CategoryId = category.getId();
 
-        Category testCategory = categoryService.find(CategoryId);
+        Category testCategory = categoryService.findById(CategoryId);
         assertThat(testCategory).isNotNull();
     }
 
@@ -58,8 +58,8 @@ class CategoryServiceTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     void testLoading() {
-        assertThatCode(()->categoryService.find(19)).doesNotThrowAnyException();
-        Category testCategory = categoryService.find(19);
+        assertThatCode(()->categoryService.findById(19)).doesNotThrowAnyException();
+        Category testCategory = categoryService.findById(19);
         assertThat(testCategory).isNotNull();
         assertThat(testCategory.getName()).isEqualTo("cat B");
         assertThat(testCategory.getParent()).isNotNull();
@@ -70,12 +70,12 @@ class CategoryServiceTest {
     @Commit
     @Test
     void testRemoving() {
-        Category testCategory = categoryService.find(22);
+        Category testCategory = categoryService.findById(22);
         assertThat(testCategory).isNotNull();
 
-        assertThatCode(()->categoryService.remove(categoryService.find(22))).doesNotThrowAnyException();
+        assertThatCode(()->categoryService.remove(categoryService.findById(22))).doesNotThrowAnyException();
 
-        testCategory = categoryService.find(22);
+        testCategory = categoryService.findById(22);
         assertThat(testCategory).isNull();
     }
 }
