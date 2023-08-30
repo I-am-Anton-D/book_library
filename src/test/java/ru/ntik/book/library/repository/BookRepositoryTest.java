@@ -200,4 +200,16 @@ class BookRepositoryTest {
 
     }
 
+    @DisplayName("Поиск по категориям")
+    @Test
+    void findByCategory() {
+        Category catA = categoryRepository.findById(18L).orElseThrow();
+        Category subCat = categoryRepository.findById(21L).orElseThrow();
+        List<Category> singleCategory = List.of(catA);
+        List<Category> multipleCategories = List.of(catA, subCat);
+
+        assertThatCode(()->bookRepository.findByCategories(singleCategory)).doesNotThrowAnyException();
+        assertThat(bookRepository.findByCategories(singleCategory)).size().isEqualTo(3);
+        assertThat(bookRepository.findByCategories(multipleCategories)).size().isEqualTo(3 + 1);
+    }
 }

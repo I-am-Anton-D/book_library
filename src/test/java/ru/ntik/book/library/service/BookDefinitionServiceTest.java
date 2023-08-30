@@ -6,8 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ntik.book.library.domain.Category;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 @SpringBootTest
 @ActiveProfiles("h2")
@@ -16,6 +20,8 @@ class BookDefinitionServiceTest {
 
     @Autowired
     BookDefinitionService bookDefinitionService;
+    @Autowired
+    CategoryService categoryService;
 
     @DisplayName("Add main image")
     @Test
@@ -37,5 +43,16 @@ class BookDefinitionServiceTest {
         assertThat(bookDefinitionService.findById(10000)).isNull();
     }
 
+    @DisplayName("Ищем по категориям")
+    @Test
+    void findByCategories() {
+        Category catA = categoryService.findById(18L);
+        Category subCat = categoryService.findById(21L);
+        List<Category> singleCategory = List.of(catA);
+        List<Category> multipleCategories = List.of(catA, subCat);
 
+        assertThatCode(()->bookDefinitionService.findByCategories(singleCategory)).doesNotThrowAnyException();
+        assertThat(bookDefinitionService.findByCategories(singleCategory)).size().isEqualTo(3);
+        assertThat(bookDefinitionService.findByCategories(multipleCategories)).size().isEqualTo(3 + 1);
+    }
 }

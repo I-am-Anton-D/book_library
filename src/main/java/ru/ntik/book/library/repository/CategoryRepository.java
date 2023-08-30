@@ -21,6 +21,10 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     Category fetchRoot();
 
     @EntityGraph(value = Category.GRAPH_FETCH_ALL)
+    @Query("SELECT c FROM Category c WHERE c.parent = :parent")
+    List<Category> fetchChildren(@Param("parent") Category parent);
+
+    @EntityGraph(value = Category.GRAPH_FETCH_ALL)
     @Query("SELECT c FROM Category c WHERE c.id = :id")
     Optional<Category> fetchById(@Param("id") Long id);
 
