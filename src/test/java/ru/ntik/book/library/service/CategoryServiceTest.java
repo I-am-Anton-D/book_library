@@ -33,7 +33,7 @@ class CategoryServiceTest {
     void testRootCategory() {
         assertThatCode(categoryService::tryCreateRootCategory).doesNotThrowAnyException();
         assertThat(categoryService.findRoot()).isNotNull();
-        assertThat(categoryService.tryCreateRootCategory()).isFalse();
+        assertThatCode(()->categoryService.tryCreateRootCategory()).doesNotThrowAnyException();
     }
 
     @DisplayName("Сохранение категории")

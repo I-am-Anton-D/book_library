@@ -54,7 +54,6 @@ public class MainLayout extends HorizontalLayout {
 
         // UI
         // Left menu
-        leftMenu.add(logo);
         categoryTree.setId("category-tree");
         categoryTree.addHierarchyColumn(Category::getName).setHeader("Категории");
         TreeData<Category> treeData = categoryService.fetchCategoriesAsTreeData();
@@ -64,29 +63,27 @@ public class MainLayout extends HorizontalLayout {
             categories = categoryTree.getSelectedItems().stream().toList();
             updateContent(contentRegion);
         });
-        leftMenu.add(categoryTree);
-        // navigating to edit categories page
+        // add navigation to "edit categories" page
         editCategoriesButton.addClickListener(e->UI.getCurrent().navigate(CategoryEditLayout.class));
         editCategoriesButton.setId("edit-categories-button");
-        leftMenu.add(editCategoriesButton);
+        leftMenu.add(logo, categoryTree, editCategoriesButton);
         add(leftMenu);
 
         // Main region
         // - Search area
-        mainRegion.setMinWidth("75%");
-        searchRegion.setWidth("100%");
         searchBox.setMinWidth("75%");
         searchBox.setId("search-bar");
-        searchRegion.add(searchBox);
-        searchRegion.add(searchButton);
-        mainRegion.add(searchRegion);
+        searchRegion.setWidth("100%");
+        searchRegion.add(searchBox, searchButton);
+
         // - Content
         contentRegion.setId("content-region");
         updateContent(contentRegion);
-        mainRegion.add(contentRegion);
+        mainRegion.setMinWidth("75%");
+        mainRegion.add(searchRegion, contentRegion);
         add(mainRegion);
 
-        // adding "responsive" grid
+        // making content grid "responsive"
         UI.getCurrent().getPage().addBrowserWindowResizeListener(e -> tryResizeGrid(e.getWidth()));
     }
 
@@ -110,7 +107,7 @@ public class MainLayout extends HorizontalLayout {
         if(categories.isEmpty()) {
             books = bookDefinitionService.findAll();
         } else {
-            // TODO: Also implement pagination
+            // TODO: Implement pagination
             books = bookDefinitionService.findByCategories(categories);
         }
 

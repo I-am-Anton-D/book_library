@@ -1,5 +1,6 @@
 package ru.ntik.book.library.service;
 
+import lombok.RequiredArgsConstructor;
 import com.vaadin.flow.data.provider.hierarchy.TreeData;
 import com.vaadin.flow.function.ValueProvider;
 import org.springframework.stereotype.Service;
@@ -12,26 +13,23 @@ import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+
     /**
      * If no root category exists, method creates it and returns true,<br>
      * otherwise method does nothing and returns false.
      */
     @PostConstruct
-    public boolean tryCreateRootCategory() {
-        if(this.categoryRepository.findRoot() == null) {
+    public void tryCreateRootCategory() {
+        if (this.categoryRepository.findRoot() == null) {
             this.categoryRepository.save(Category.createRootCategory("Все",
                     "Список всех доступных книг", 0L));
-            return true;
         }
-        return false;
     }
 
-    public CategoryService(CategoryRepository categoryRepository) { this.categoryRepository = categoryRepository;}
-
-    @Transactional
-    public List<Category> fetchAll() {
+    public List<Category> findAll() {
         return categoryRepository.findAll();
     }
 
@@ -57,7 +55,7 @@ public class CategoryService {
      */
     @Transactional
     public TreeData<Category> fetchCategoriesAsTreeData() {
-        List<Category> allCategories = this.fetchAll();
+        List<Category> allCategories = this.findAll();
         // getting first children of root
         List<Category> rootCategories = allCategories.stream().
                 filter(cat -> cat.getParent() != null && cat.getParent().getParent() == null).toList();
