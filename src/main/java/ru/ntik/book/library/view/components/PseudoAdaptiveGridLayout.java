@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** Component that simulates responsive grid layout by allowing externally changing column count */
+/** Component that allows simulating responsive grid layout by allowing externally changing column count */
 public class PseudoAdaptiveGridLayout extends VerticalLayout {
+    // TODO: Think of better name. This describes component well but is too long and ugly
     private final List<Component> componentList = new ArrayList<>();
-
     @Getter
     private int columnCount = 3;
 

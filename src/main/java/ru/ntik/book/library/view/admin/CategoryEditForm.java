@@ -19,6 +19,12 @@ import java.util.List;
 
 import static ru.ntik.book.library.util.Constants.*;
 
+/**
+ * Form for editing given `Category` object or creating new one.
+ * <br><br>
+ * NOTE: Form performs validation but doesn't save object to repository by itself.<br>
+ * You should subscribe to save event (addOnSaveListener()) and do post-processing and saving yourself.
+ */
 public class CategoryEditForm extends VerticalLayout {
 
     private final Category category;
@@ -32,7 +38,6 @@ public class CategoryEditForm extends VerticalLayout {
     private Button cancelButton = new Button("Отмена", e->this.close());
     private final List<ObjectActionListener<Category>> onSaveListeners = new ArrayList<>();
     private final List<ObjectActionListener<Category>> onCloseListeners = new ArrayList<>();
-
     public CategoryEditForm(CategoryService categoryService, Category category, Category parent) {
         if (category == null) {
             Category root = categoryService.findRoot();
