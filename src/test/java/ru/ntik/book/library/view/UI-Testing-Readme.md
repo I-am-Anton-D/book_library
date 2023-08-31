@@ -77,3 +77,6 @@ grid.addColumn(...).setKey("column_key_name");
 Пока проверены следующие случаи использования:
 - `GridKt._clickItem(Grid<T> grid, int rowIndex, String columnKey);` - простейший случай - нажать на саму ячейку
 - `GridKt._getCellComponent(Grid<T> grid, int rowIndex, String columnKey)` - получить содержимое ячейки. Возвращает `com.vaadin.flow.component.Component`, который можно привести к требуемому типу
+- `GridKt._selectRow(Grid<T> grid, int rowIndex)` - выбрать строку по индексу (**Внимание**: мультиселект **не** поддерживается, но доступен его частный случай при помощи `GridKt._selectAll(Grid<T> grid)`)
+- `GridKt._selectAll(Grid<T> grid)` - выбрать все элементы `Grid<T>`. **Внимание**: порядок выбора элементов как в layout **не гарантируется**.
+- `GridKt.expectRow(Grid<T>, int rowIndex, String value)` - простой assert на соответствие видимого значения строки `Grid<T>` текстовому значению `value`. Поведение в ситуации с **множеством** столбцов **не проверялось**.

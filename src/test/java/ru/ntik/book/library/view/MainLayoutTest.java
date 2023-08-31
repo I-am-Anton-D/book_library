@@ -1,15 +1,11 @@
 package ru.ntik.book.library.view;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.treegrid.TreeGrid;
 
 import com.vaadin.flow.router.RouteConfiguration;
 import org.junit.jupiter.api.*;
@@ -17,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import ru.ntik.book.library.domain.Category;
 import ru.ntik.book.library.service.CategoryService;
 import ru.ntik.book.library.view.admin.CategoryEditLayout;
 import ru.ntik.book.library.view.components.BookDefinitionPreview;
+import ru.ntik.book.library.view.components.CategoryPicker;
 
 import java.util.List;
 
@@ -54,7 +50,7 @@ class MainLayoutTest extends AbstractUITest{
         })).isNotNull();
 
         // has categories menu
-        assertThat(_get(TreeGrid.class, spec->spec.withId("category-tree"))).isNotNull();
+        assertThat(_get(CategoryPicker.class)).isNotNull();
 
         // has "add category" button
         assertThat(_get(Button.class, spec -> {
@@ -68,30 +64,6 @@ class MainLayoutTest extends AbstractUITest{
         assertThat(_get(Button.class, spec -> {
             spec.withText("Найти");
         })).isNotNull();
-    }
-
-    @DisplayName("Корректность загрузки категорий")
-    @Test
-    void categoryTreeIntegrity() {
-        UI.getCurrent().navigate(MainLayout.class);
-        // has categories menu
-        TreeGrid<Category> tree = _get(TreeGrid.class, spec->spec.withId("category-tree"));
-
-        // has exactly one data column
-        assertThat(tree.getColumns()).hasSize(1);
-
-        // that has actual header
-        assertThat(tree.getColumns().get(0).getHeaderText()).isNotEmpty();
-
-        /* Note: can't check that data is correctly rendered by vaadin,
-            but at least can check that it was properly loaded into component */
-        assertThat(tree.getTreeData().getRootItems()).asList().isNotEmpty();
-        // |- has root categories
-        List<Category> rootElements = tree.getTreeData().getRootItems();
-        assertThat(rootElements).map(Category::getName).contains("cat A", "cat B");
-        // \- and sub-categories
-        List<Category> childrenOfFirstRoot = tree.getTreeData().getChildren(rootElements.get(0));
-        assertThat(childrenOfFirstRoot).map(Category::getName).contains("child of first child");
     }
 
     @DisplayName("Нажатие кнопки \"Изменить категории\"")

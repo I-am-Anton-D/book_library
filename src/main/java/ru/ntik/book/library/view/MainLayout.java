@@ -2,15 +2,11 @@ package ru.ntik.book.library.view;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.treegrid.TreeGrid;
-import com.vaadin.flow.data.provider.hierarchy.TreeData;
-import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
@@ -21,9 +17,9 @@ import ru.ntik.book.library.service.BookDefinitionService;
 import ru.ntik.book.library.service.CategoryService;
 import ru.ntik.book.library.view.admin.CategoryEditLayout;
 import ru.ntik.book.library.view.components.BookDefinitionPreview;
+import ru.ntik.book.library.view.components.CategoryPicker;
 import ru.ntik.book.library.view.components.PseudoAdaptiveGridLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Route("")
@@ -36,7 +32,8 @@ public class MainLayout extends HorizontalLayout {
 
     // UI components
     private final VerticalLayout leftMenu = new VerticalLayout();
-    private final TreeGrid<Category> categoryTree = new TreeGrid<>();
+
+    private final CategoryPicker categoryPicker;
     private final Image logo = new Image(
             "https://static.tildacdn.com/tild3262-3336-4562-a164-326236316164/Frame.svg", "logo");
     private final Button editCategoriesButton = new Button("Изменить категории");
@@ -46,27 +43,17 @@ public class MainLayout extends HorizontalLayout {
     private final Button searchButton = new Button("Найти");
     private final PseudoAdaptiveGridLayout contentRegion = new PseudoAdaptiveGridLayout();
 
-    private List<Category> categories = new ArrayList<>();
-
     @Autowired
     MainLayout(CategoryService categoryService, BookDefinitionService bookDefinitionService) {
         this.bookDefinitionService = bookDefinitionService;
-
         // UI
         // Left menu
-        categoryTree.setId("category-tree");
-        categoryTree.addHierarchyColumn(Category::getName).setHeader("Категории");
-        TreeData<Category> treeData = categoryService.fetchCategoriesAsTreeData();
-        categoryTree.setDataProvider(new TreeDataProvider<>(treeData));
-        categoryTree.setSelectionMode(Grid.SelectionMode.MULTI);
-        categoryTree.addSelectionListener(e->{
-            categories = categoryTree.getSelectedItems().stream().toList();
-            updateContent(contentRegion);
-        });
+        categoryPicker = new CategoryPicker(categoryService, true);
+        categoryPicker.addSelectionListener(categories->updateContent(contentRegion, categories));
         // add navigation to "edit categories" page
         editCategoriesButton.addClickListener(e->UI.getCurrent().navigate(CategoryEditLayout.class));
         editCategoriesButton.setId("edit-categories-button");
-        leftMenu.add(logo, categoryTree, editCategoriesButton);
+        leftMenu.add(logo, categoryPicker, editCategoriesButton);
         add(leftMenu);
 
         // Main region
@@ -78,7 +65,7 @@ public class MainLayout extends HorizontalLayout {
 
         // - Content
         contentRegion.setId("content-region");
-        updateContent(contentRegion);
+        updateContent(contentRegion, List.of());
         mainRegion.setMinWidth("75%");
         mainRegion.add(searchRegion, contentRegion);
         add(mainRegion);
@@ -100,7 +87,7 @@ public class MainLayout extends HorizontalLayout {
         }
     }
 
-    private void updateContent(VerticalLayout contentRegion) {
+    private void updateContent(VerticalLayout contentRegion, List<Category> categories) {
         contentRegion.removeAll();
 
         List<BookDefinition> books;
