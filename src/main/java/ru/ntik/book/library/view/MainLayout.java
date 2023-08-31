@@ -1,21 +1,27 @@
 package ru.ntik.book.library.view;
 
-import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.TreeData;
 import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
-import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.ntik.book.library.domain.BookDefinition;
 import ru.ntik.book.library.domain.Category;
+import ru.ntik.book.library.service.BookDefinitionService;
 import ru.ntik.book.library.service.CategoryService;
+import ru.ntik.book.library.view.admin.CategoryEditLayout;
+import ru.ntik.book.library.view.components.BookDefinitionPreview;
+import ru.ntik.book.library.view.components.PseudoAdaptiveGridLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,82 +31,101 @@ import java.util.List;
 @UIScope
 public class MainLayout extends HorizontalLayout {
 
-    private final CategoryService categoryService;
-    private final TreeData<Category> treeData = new TreeData<>();
-    private final TreeGrid<Category> categoryTree = new TreeGrid<>();
-    private final List<Category> categories = new ArrayList<>();
+    // services
+    private final BookDefinitionService bookDefinitionService;
 
     // UI components
     private final VerticalLayout leftMenu = new VerticalLayout();
+    private final TreeGrid<Category> categoryTree = new TreeGrid<>();
     private final Image logo = new Image(
             "https://static.tildacdn.com/tild3262-3336-4562-a164-326236316164/Frame.svg", "logo");
-    private final Button addCategoryButton = new Button("Добавить категорию");
+    private final Button editCategoriesButton = new Button("Изменить категории");
+    private final VerticalLayout mainRegion = new VerticalLayout();
+    private final HorizontalLayout searchRegion = new HorizontalLayout();
     private final TextField searchBox = new TextField();
     private final Button searchButton = new Button("Найти");
-    private final Image contentMock = new Image("https://www.mrw.it/img/cope/0iwkf4_1609360688.jpg", "placeholder");
+    private final PseudoAdaptiveGridLayout contentRegion = new PseudoAdaptiveGridLayout();
+
+    private List<Category> categories = new ArrayList<>();
 
     @Autowired
-    MainLayout(CategoryService categoryService) {
-        this.categoryService = categoryService;
-        initCategories();
+    MainLayout(CategoryService categoryService, BookDefinitionService bookDefinitionService) {
+        this.bookDefinitionService = bookDefinitionService;
 
+        // UI
         // Left menu
-        leftMenu.add(logo);
-        leftMenu.add(categoryTree);
-        leftMenu.add(addCategoryButton);
+        categoryTree.setId("category-tree");
+        categoryTree.addHierarchyColumn(Category::getName).setHeader("Категории");
+        TreeData<Category> treeData = categoryService.fetchCategoriesAsTreeData();
+        categoryTree.setDataProvider(new TreeDataProvider<>(treeData));
+        categoryTree.setSelectionMode(Grid.SelectionMode.MULTI);
+        categoryTree.addSelectionListener(e->{
+            categories = categoryTree.getSelectedItems().stream().toList();
+            updateContent(contentRegion);
+        });
+        // add navigation to "edit categories" page
+        editCategoriesButton.addClickListener(e->UI.getCurrent().navigate(CategoryEditLayout.class));
+        editCategoriesButton.setId("edit-categories-button");
+        leftMenu.add(logo, categoryTree, editCategoriesButton);
+        add(leftMenu);
 
-        addCategoryButton.addClickListener(this::openCreateCategoryView);
-
+        // Main region
         // - Search area
         searchBox.setMinWidth("75%");
         searchBox.setId("search-bar");
-
-        HorizontalLayout searchRegion = new HorizontalLayout();
         searchRegion.setWidth("100%");
-        searchRegion.add(searchBox);
-        searchRegion.add(searchButton);
+        searchRegion.add(searchBox, searchButton);
 
         // - Content
-        contentMock.setWidth("80%");
-        VerticalLayout contentRegion = new VerticalLayout();
-        contentRegion.add(contentMock);
-
-        VerticalLayout mainRegion = new VerticalLayout();
+        contentRegion.setId("content-region");
+        updateContent(contentRegion);
         mainRegion.setMinWidth("75%");
         mainRegion.add(searchRegion, contentRegion);
-        add(leftMenu, mainRegion);
+        add(mainRegion);
+
+        // making content grid "responsive"
+        UI.getCurrent().getPage().addBrowserWindowResizeListener(e -> tryResizeGrid(e.getWidth()));
     }
 
-    private void openCreateCategoryView(ClickEvent<Button> e) {
-        // test method, replace with actual content
-        addCategoryButton.setText("Категория добавлена");
+    private void tryResizeGrid(int width) {
+        width *= 0.75;
+        if(width >= 1920) {
+            contentRegion.setColumnCount(5);
+        } else if (width >= 1280) {
+            contentRegion.setColumnCount(4);
+        } else if (width >= 1024) {
+            contentRegion.setColumnCount(2);
+        } else if (width < 750) {
+            contentRegion.setColumnCount(1);
+        }
     }
 
-    private void initCategories() {
-        categories.addAll(categoryService.findAll());
+    private void updateContent(VerticalLayout contentRegion) {
+        contentRegion.removeAll();
 
-        // getting first children of root
-        List<Category> rootCategories = categories.stream().
-                filter(cat -> cat.getParent() != null && cat.getParent().getParent() == null).toList();
-        treeData.addRootItems(rootCategories);
-        addChildrenRecursively(rootCategories, this::getSubcategories);
+        List<BookDefinition> books;
+        if(categories.isEmpty()) {
+            books = bookDefinitionService.findAll();
+        } else {
+            // TODO: Implement pagination
+            books = bookDefinitionService.findByCategories(categories);
+        }
 
-        categoryTree.setId("category-tree");
-        categoryTree.addHierarchyColumn(Category::getName).setHeader("Категории");
-        categoryTree.setDataProvider(new TreeDataProvider<>(treeData));
-    }
-
-    private void addChildrenRecursively(List<Category> categories, ValueProvider<Category, List<Category>> childProvider) {
-        categories.forEach(category -> {
-            List<Category> children = childProvider.apply(category);
-            treeData.addItems(category, children);
-            if (!children.isEmpty()) {
-                addChildrenRecursively(children, childProvider);
+        if(books.isEmpty()) {
+            String errorMessage = "";
+            if(categories.isEmpty()) {
+                errorMessage = "Книги в системе отсутствуют";
+            } else if (categories.size() == 1) {
+                errorMessage = "Не найдено книг в данной категории";
+            } else {
+                errorMessage = "Не найдено книг c заданным набором категорий";
             }
-        });
-    }
+            contentRegion.add(new Span(errorMessage));
+            return;
+        }
 
-    private List<Category> getSubcategories(Category category) {
-        return categories.stream().filter(cat -> cat.getParent() == category).toList();
+        for (BookDefinition bookDefinition : books) {
+            contentRegion.add(new BookDefinitionPreview(bookDefinition));
+        }
     }
 }

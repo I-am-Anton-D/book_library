@@ -1,5 +1,6 @@
 package ru.ntik.book.library.service;
 
+import com.vaadin.flow.data.provider.hierarchy.TreeData;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,8 +9,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ntik.book.library.domain.Category;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -34,7 +33,7 @@ class CategoryServiceTest {
     void testRootCategory() {
         assertThatCode(categoryService::tryCreateRootCategory).doesNotThrowAnyException();
         assertThat(categoryService.findRoot()).isNotNull();
-        assertThat(categoryService.tryCreateRootCategory()).isFalse();
+        assertThatCode(()->categoryService.tryCreateRootCategory()).doesNotThrowAnyException();
     }
 
     @DisplayName("Сохранение категории")
@@ -77,5 +76,29 @@ class CategoryServiceTest {
 
         testCategory = categoryService.findById(22);
         assertThat(testCategory).isNull();
+    }
+    @DisplayName("Построение TreeData из всех категорий")
+    @Transactional
+    @Test
+    void testFetchingCategoriesAsTreeData() {
+        // make sure root categories fetched correct
+        TreeData<Category> treeData = categoryService.fetchCategoriesAsTreeData();
+        assertThat(treeData.getRootItems()).containsAll(categoryService.findRoot().getChildren());
+        // make sure sub-categories fetched correctly
+        Category catA = treeData.getRootItems().get(0);
+        // and there is no duplicates or mis-parenting
+        Category catB = treeData.getRootItems().get(1);
+        assertThat(treeData.getChildren(catA)).containsAll(catA.getChildren());
+        assertThat(treeData.getChildren(catB)).isEmpty();
+    }
+    @DisplayName("Проверка на наличие подкатегорий")
+    @Test
+    void testIfEmpty() {
+        Category nonEmptyCategory = categoryService.findById(18L);
+        Category emptyCategory = categoryService.findById(21L);
+
+        assertThatCode(()->categoryService.isEmpty(nonEmptyCategory)).doesNotThrowAnyException();
+        assertThat(categoryService.isEmpty(nonEmptyCategory)).isFalse();
+        assertThat(categoryService.isEmpty(emptyCategory)).isTrue();
     }
 }
