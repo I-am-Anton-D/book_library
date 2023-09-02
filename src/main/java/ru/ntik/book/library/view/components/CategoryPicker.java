@@ -15,7 +15,9 @@ import java.util.List;
 public class CategoryPicker extends VerticalLayout {
     private final TreeGrid<Category> categoryTree = new TreeGrid<>();
     private final List<ObjectActionListener<List<Category>>> selectionListeners = new ArrayList<>();
+    private final CategoryService categoryService;
     public CategoryPicker(CategoryService categoryService, boolean isMultiselec) {
+        this.categoryService = categoryService;
         categoryTree.addHierarchyColumn(Category::getName).setHeader("Категории").setKey("categories");
 
         TreeData<Category> treeData = categoryService.fetchCategoriesAsTreeData();
@@ -31,6 +33,12 @@ public class CategoryPicker extends VerticalLayout {
             }
         });
         add(categoryTree);
+    }
+
+    public void update() {
+        // TODO: think how to update treeData without re-creating TreeDataProvider
+        TreeData<Category> treeData = categoryService.fetchCategoriesAsTreeData();
+        categoryTree.setDataProvider(new TreeDataProvider<>(treeData));
     }
     public void addSelectionListener(ObjectActionListener<List<Category>> listener) {
         selectionListeners.add(listener);

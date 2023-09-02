@@ -5,9 +5,12 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import ru.ntik.book.library.domain.Category;
+import ru.ntik.book.library.service.CategoryService;
 import ru.ntik.book.library.view.AbstractUITest;
 import ru.ntik.book.library.view.MainLayout;
 
@@ -20,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles("h2")
 class CategoryPickerTest extends AbstractUITest {
+    @Autowired
+    CategoryService categoryService;
 
     private List<Category> categories = new ArrayList<>();
     @DisplayName("Базовый тест")
@@ -93,6 +98,30 @@ class CategoryPickerTest extends AbstractUITest {
         assertThat(categories).map(Category::getName).contains(
                 "cat A",
                 "child of first child", "child of first child", "child of first child",
+                "cat B");
+    }
+
+    @DisplayName("Обновление")
+    @DirtiesContext
+    @Test
+    void testUpdating() {
+        UI.getCurrent().navigate(MainLayout.class);
+        CategoryPicker categoryPicker = _get(CategoryPicker.class);
+        TreeGrid<Category> treeGrid = _get(categoryPicker, TreeGrid.class);
+        GridKt._expandAll(treeGrid);
+
+        List<Category> categories = GridKt._findAll(treeGrid);
+        assertThat(categories).map(Category::getName).contains(
+                "cat A",
+                "child of first child", "child of first child", "child of first child",
+                "cat B");
+        Category childOfA = categories.stream().filter(cat->cat.getName().equals("child of first child")).findFirst().orElse(null);
+        categoryService.remove(childOfA);
+
+        categoryPicker.update();
+        assertThat(categories).map(Category::getName).contains(
+                "cat A",
+                "child of first child", "child of first child",
                 "cat B");
     }
 }

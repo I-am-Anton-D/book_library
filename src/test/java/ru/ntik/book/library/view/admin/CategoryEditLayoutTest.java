@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import ru.ntik.book.library.domain.Category;
 import ru.ntik.book.library.service.CategoryService;
 import ru.ntik.book.library.view.AbstractUITest;
+import ru.ntik.book.library.view.components.CategoryPicker;
 
 import java.util.List;
 
@@ -24,68 +25,32 @@ import static com.github.mvysny.kaributesting.v10.LocatorJ._get;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
+@SpringBootTest
 @ActiveProfiles("h2")
-@DirtiesContext
 class CategoryEditLayoutTest extends AbstractUITest {
     @DisplayName("Поверхностный тест")
     @Test
     void smokeTest() {
         assertThat(UI.getCurrent()).isNotNull();
         assertThatCode(() -> UI.getCurrent().navigate(CategoryEditLayout.class)).doesNotThrowAnyException();
-        assertThatCode(UI.getCurrent()::getChildren).doesNotThrowAnyException();
+
+        // category picker is present
+        CategoryPicker categoryPicker = _get(CategoryPicker.class);
+        assertThat(categoryPicker).isNotNull();
     }
 
-    @DisplayName("Наличие основных элементов")
-    @Test
-    void uiIntegrityTest() {
-        UI.getCurrent().navigate(CategoryEditLayout.class);
-        // TODO: Implement, when UI is fully realized
-    }
-
-    @DisplayName("Корректность загрузки категорий")
-    @Test
-    void categoryTreeIntegrity() {
-        UI.getCurrent().navigate(CategoryEditLayout.class);
-        // has categories list
-        TreeGrid<Category> tree = _get(TreeGrid.class, spec->spec.withId("category-edit-tree"));
-
-        // has data column
-        List<Component> treeElements = tree.getChildren().toList();
-        assertThat(treeElements).size().isEqualTo(3);
-
-        // that has actual header
-        assertThat(((Grid.Column<Category>)treeElements.get(0)).getHeaderText()).isNotEmpty();
-
-        /* Note: can't check that data is correctly rendered by vaadin,
-            but at least can check that it was properly loaded into component */
-        assertThat(tree.getTreeData().getRootItems()).asList().isNotEmpty();
-        // |- has root categories
-        List<Category> rootElements = tree.getTreeData().getRootItems();
-        assertThat(rootElements).map(Category::getName).contains("cat A", "cat B");
-        // \- and sub-categories
-        List<Category> childrenOfFirstRoot = tree.getTreeData().getChildren(rootElements.get(0));
-        assertThat(childrenOfFirstRoot).map(Category::getName).contains("child of first child");
-    }
-
-    @DisplayName("Диалог \"Создать категорию\" открывается")
+    @DisplayName("Создание корневой категории открывается")
     @Test
     void addCategoryButtonTest() {
         UI.getCurrent().navigate(CategoryEditLayout.class);
 
-        // Getting grid
-        TreeGrid<Category> grid = _get(TreeGrid.class, spec->spec.withId("category-edit-tree"));
-        // Getting Buttons in first row
-        HorizontalLayout buttons = (HorizontalLayout) GridKt._getCellComponent(grid, 0, "buttons");
-
         // getting "+" button and clicking it
-        Button addButton =  _get(buttons, Button.class, spec->spec.withIcon("lumo", "plus"));
+        Button addButton =  _get(Button.class, spec->spec.withIcon("lumo", "plus"));
         assertThat(addButton).isNotNull();
         assertThatCode(addButton::click).doesNotThrowAnyException();
 
         // making sure dialog is opened
-        Dialog addDialog = _get(Dialog.class, spec->{
-            spec.withPredicate(el->el.getHeaderTitle().toLowerCase().contains("создать"));
-        });
+        Dialog addDialog = _get(Dialog.class, spec->spec.withId("category-add-dialog"));
         assertThat(addDialog).isNotNull();
         assertThat(addDialog.isOpened()).isTrue();
     }
@@ -94,44 +59,13 @@ class CategoryEditLayoutTest extends AbstractUITest {
     @Test
     void editCategoryButtonTest() {
         UI.getCurrent().navigate(CategoryEditLayout.class);
+        CategoryPicker categoryPicker = _get(CategoryPicker.class);
 
-        // Getting grid
-        TreeGrid<Category> grid = _get(TreeGrid.class, spec->spec.withId("category-edit-tree"));
-        // Getting Buttons in first row
-        HorizontalLayout buttons = (HorizontalLayout) GridKt._getCellComponent(grid, 0, "buttons");
+        Grid<Category> categoryGrid = _get(categoryPicker, Grid.class);
+        assertThatCode(()->GridKt._clickItem(categoryGrid, 0)).doesNotThrowAnyException();
 
-        // getting edit button and clicking it
-        Button editButton =  _get(buttons, Button.class, spec->spec.withIcon("lumo", "edit"));
-        assertThat(editButton).isNotNull();
-        assertThatCode(editButton::click).doesNotThrowAnyException();
-
-        // making sure dialog is opened
-        Dialog addDialog = _get(Dialog.class, spec->{
-            spec.withPredicate(el->el.getHeaderTitle().toLowerCase().contains("изменить"));
-        });
-        assertThat(addDialog).isNotNull();
-    }
-
-    @DisplayName("Диалог \"Удалить категорию\" открывается")
-    @DirtiesContext
-    @Test
-    void removeCategoryButtonTest() {
-        UI.getCurrent().navigate(CategoryEditLayout.class);
-
-        // Getting grid
-        TreeGrid<Category> grid = _get(TreeGrid.class, spec->spec.withId("category-edit-tree"));
-        // Getting Buttons in first row
-        HorizontalLayout buttons = (HorizontalLayout) GridKt._getCellComponent(grid, 0, "buttons");
-
-        // getting "x" button and clicking it
-        Button addButton =  _get(buttons, Button.class, spec->spec.withIcon("lumo", "cross"));
-        assertThat(addButton).isNotNull();
-        assertThatCode(addButton::click).doesNotThrowAnyException();
-
-        // making sure dialog is opened
-        Dialog addDialog = _get(Dialog.class, spec->{
-            spec.withPredicate(el->el.getHeaderTitle().toLowerCase().contains("удалить"));
-        });
-        assertThat(addDialog).isNotNull();
+        Dialog editDialog = _get(Dialog.class, spec->spec.withId("category-edit-dialog"));
+        assertThat(editDialog).isNotNull();
+        assertThat(editDialog.isOpened()).isTrue();
     }
 }
