@@ -18,7 +18,7 @@ import ru.ntik.book.library.service.CategoryService;
 import ru.ntik.book.library.view.admin.CategoryEditLayout;
 import ru.ntik.book.library.view.components.BookDefinitionPreview;
 import ru.ntik.book.library.view.components.CategoryPicker;
-import ru.ntik.book.library.view.components.PseudoAdaptiveGridLayout;
+import ru.ntik.book.library.view.components.AdaptiveBookPreviewLayout;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class MainLayout extends HorizontalLayout {
     private final HorizontalLayout searchRegion = new HorizontalLayout();
     private final TextField searchBox = new TextField();
     private final Button searchButton = new Button("Найти");
-    private final PseudoAdaptiveGridLayout contentRegion = new PseudoAdaptiveGridLayout();
+    private final AdaptiveBookPreviewLayout contentRegion = new AdaptiveBookPreviewLayout();
 
     @Autowired
     MainLayout(CategoryService categoryService, BookDefinitionService bookDefinitionService) {
@@ -71,20 +71,11 @@ public class MainLayout extends HorizontalLayout {
         add(mainRegion);
 
         // making content grid "responsive"
-        UI.getCurrent().getPage().addBrowserWindowResizeListener(e -> tryResizeGrid(e.getWidth()));
-    }
-
-    private void tryResizeGrid(int width) {
-        width *= 0.75;
-        if(width >= 1920) {
-            contentRegion.setColumnCount(5);
-        } else if (width >= 1280) {
-            contentRegion.setColumnCount(4);
-        } else if (width >= 1024) {
-            contentRegion.setColumnCount(2);
-        } else if (width < 750) {
-            contentRegion.setColumnCount(1);
-        }
+        UI.getCurrent().getPage().addBrowserWindowResizeListener(e -> {
+            // approximating available space
+            int width = (int) Math.round(0.75 * e.getWidth()); // account for mainRegion's min width = 75% constrain
+            contentRegion.updateWidth(width);
+        });
     }
 
     private void updateContent(VerticalLayout contentRegion, List<Category> categories) {
@@ -112,7 +103,9 @@ public class MainLayout extends HorizontalLayout {
         }
 
         for (BookDefinition bookDefinition : books) {
-            contentRegion.add(new BookDefinitionPreview(bookDefinition));
+            BookDefinitionPreview preview = new BookDefinitionPreview(bookDefinition);
+            preview.addClickListener(e->UI.getCurrent().navigate("book/" + bookDefinition.getId()));
+            contentRegion.add(preview);
         }
     }
 }

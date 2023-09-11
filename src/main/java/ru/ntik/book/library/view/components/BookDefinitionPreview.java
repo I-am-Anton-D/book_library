@@ -1,6 +1,5 @@
 package ru.ntik.book.library.view.components;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -18,7 +17,7 @@ public class BookDefinitionPreview extends VerticalLayout {
 
         StreamResource cover;
 
-        // TODO: implement proper cover loading for, for when book has one
+        // TODO: implement proper cover loading for cases, when book has one
 
         cover = new StreamResource("book-cover.png",
                 ()->getClass().getResourceAsStream("/book-cover.png"));
@@ -29,8 +28,5 @@ public class BookDefinitionPreview extends VerticalLayout {
 
         add(new Span(bookDefinition.getName()));
         add(new Span("Рейтинг: " + bookDefinition.getRating().getCommonRating() + "/5.0 звезд"));
-
-        // navigation
-        this.addClickListener(e-> UI.getCurrent().navigate("book/" + bookDefinition.getId()));
     }
 }
