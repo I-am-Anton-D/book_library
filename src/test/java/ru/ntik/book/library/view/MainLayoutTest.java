@@ -7,21 +7,20 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
-import com.vaadin.flow.router.RouteConfiguration;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import ru.ntik.book.library.service.CategoryService;
+import ru.ntik.book.library.view.admin.BookDefinitionEditLayout;
 import ru.ntik.book.library.view.admin.CategoryEditLayout;
 import ru.ntik.book.library.view.components.BookDefinitionPreview;
 import ru.ntik.book.library.view.components.CategoryPicker;
 
-import java.util.List;
-
 import static com.github.mvysny.kaributesting.v10.LocatorJ.*;
 import static org.assertj.core.api.Assertions.*;
+import static ru.ntik.book.library.util.TestUtils.assertNavigated;
 
 @SpringBootTest
 @ActiveProfiles("h2")
@@ -66,29 +65,26 @@ class MainLayoutTest extends AbstractUITest{
         })).isNotNull();
     }
 
-    @DisplayName("Нажатие кнопки \"Изменить категории\"")
+    @DisplayName("Нажатие кнопки \"Редактировать категории\"")
     @Test
-    void addCategoryButtonTest() {
+    void editCategoryButtonTest() {
         UI.getCurrent().navigate(MainLayout.class);
         Button addButton = _get(Button.class, spec -> {
-            spec.withText("Изменить категории");
+            spec.withId("edit-categories-button");
         });
 
-        // adding navigation event listeners to implement navigation testing
-        UI.getCurrent().addAfterNavigationListener(event->{
-            String previousRoute = RouteConfiguration.forSessionScope()
-                    .getUrl(MainLayout.class);
-            String targetRoute = RouteConfiguration.forSessionScope()
-                    .getUrl(CategoryEditLayout.class);
-            String actualRoute = event.getLocation().getPath();
+        assertNavigated(addButton, MainLayout.class, CategoryEditLayout.class);
+    }
 
-           assertThat(actualRoute).isNotEqualTo(previousRoute);
-           assertThat(actualRoute).isEqualTo(targetRoute);
+    @DisplayName("Нажатие кнопки \"Редактировать книги\"")
+    @Test
+    void editBookDefinitionButtonTest() {
+        UI.getCurrent().navigate(MainLayout.class);
+        Button addButton = _get(Button.class, spec -> {
+            spec.withId("edit-books-button");
         });
 
-        assertThatCode(addButton::click).doesNotThrowAnyException();
-
-        // further assertions taking place in NavigationListener specified earlier
+        assertNavigated(addButton, MainLayout.class, BookDefinitionEditLayout.class);
     }
 
     @DisplayName("Корректно отображается список книг")

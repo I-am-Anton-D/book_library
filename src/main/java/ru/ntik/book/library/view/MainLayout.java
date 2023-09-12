@@ -15,6 +15,7 @@ import ru.ntik.book.library.domain.BookDefinition;
 import ru.ntik.book.library.domain.Category;
 import ru.ntik.book.library.service.BookDefinitionService;
 import ru.ntik.book.library.service.CategoryService;
+import ru.ntik.book.library.view.admin.BookDefinitionEditLayout;
 import ru.ntik.book.library.view.admin.CategoryEditLayout;
 import ru.ntik.book.library.view.components.BookDefinitionPreview;
 import ru.ntik.book.library.view.components.CategoryPicker;
@@ -36,7 +37,8 @@ public class MainLayout extends HorizontalLayout {
     private final CategoryPicker categoryPicker;
     private final Image logo = new Image(
             "https://static.tildacdn.com/tild3262-3336-4562-a164-326236316164/Frame.svg", "logo");
-    private final Button editCategoriesButton = new Button("Изменить категории");
+    private final Button editCategoriesButton = new Button("Редактировать категории");
+    private final Button editBookDefinitionsButton = new Button("Редактировать книги");
     private final VerticalLayout mainRegion = new VerticalLayout();
     private final HorizontalLayout searchRegion = new HorizontalLayout();
     private final TextField searchBox = new TextField();
@@ -53,7 +55,9 @@ public class MainLayout extends HorizontalLayout {
         // add navigation to "edit categories" page
         editCategoriesButton.addClickListener(e->UI.getCurrent().navigate(CategoryEditLayout.class));
         editCategoriesButton.setId("edit-categories-button");
-        leftMenu.add(logo, categoryPicker, editCategoriesButton);
+        editBookDefinitionsButton.addClickListener(e->UI.getCurrent().navigate(BookDefinitionEditLayout.class));
+        editBookDefinitionsButton.setId("edit-books-button");
+        leftMenu.add(logo, categoryPicker, editCategoriesButton, editBookDefinitionsButton);
         add(leftMenu);
 
         // Main region

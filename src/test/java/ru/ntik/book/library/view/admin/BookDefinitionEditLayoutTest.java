@@ -22,6 +22,7 @@ import static com.github.mvysny.kaributesting.v10.LocatorJ._find;
 import static com.github.mvysny.kaributesting.v10.LocatorJ._get;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static ru.ntik.book.library.util.TestUtils.assertNavigated;
 
 @SpringBootTest
 @ActiveProfiles("h2")
@@ -53,20 +54,7 @@ class BookDefinitionEditLayoutTest extends AbstractUITest {
         UI.getCurrent().navigate(BookDefinitionEditLayout.class);
         Button backButton = _get(Button.class, spec->spec.withId("back-navigation-button"));
 
-        // defining listener
-        UI.getCurrent().addAfterNavigationListener(e->{
-            String previousRoute = RouteConfiguration.forSessionScope()
-                    .getUrl(BookDefinitionEditLayout.class);
-            String targetRoute = RouteConfiguration.forSessionScope()
-                    .getUrl(MainLayout.class);
-            String actualRoute = e.getLocation().getPath();
-
-            assertThat(actualRoute).isEqualTo(targetRoute);
-            assertThat(actualRoute).isNotEqualTo(previousRoute);
-        });
-
-        assertThatCode(backButton::click).doesNotThrowAnyException();
-        // asserting in listener, that navigated to correct page
+        assertNavigated(backButton, BookDefinitionEditLayout.class, MainLayout.class);
     }
 
     @DisplayName("Открывается диалог добавления")
