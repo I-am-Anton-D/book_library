@@ -1,10 +1,12 @@
 package ru.ntik.book.library.view.components;
 
-import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.TreeData;
 import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import ru.ntik.book.library.domain.Category;
 import ru.ntik.book.library.service.CategoryService;
 import ru.ntik.book.library.util.ObjectActionListener;
@@ -14,62 +16,32 @@ import java.util.List;
 
 public class CategoryPicker extends VerticalLayout {
     private final TreeGrid<Category> categoryTree = new TreeGrid<>();
-    private final List<ObjectActionListener<List<Category>>> selectionListeners = new ArrayList<>();
+    private final List<ObjectActionListener<Category>> selectionListeners = new ArrayList<>();
+    private final List<ObjectActionListener<Category>> editButtonListeners = new ArrayList<>();
     private final CategoryService categoryService;
 
-    List<Category> previousSelection = new ArrayList<>();
-    public CategoryPicker(CategoryService categoryService, boolean isMultiselec) {
+    public CategoryPicker(CategoryService categoryService) {
+        this(categoryService, false);
+    }
+
+    public CategoryPicker(CategoryService categoryService, boolean hasEditRow) {
         this.categoryService = categoryService;
         categoryTree.addHierarchyColumn(Category::getName).setHeader("Категории").setKey("categories");
 
         TreeData<Category> treeData = categoryService.fetchCategoriesAsTreeData();
         categoryTree.setDataProvider(new TreeDataProvider<>(treeData));
-        if (isMultiselec)
-        {
-            categoryTree.setSelectionMode(Grid.SelectionMode.MULTI);
-            addSelectionListener(this::recursiveMultiselect);
-        }
 
         categoryTree.addSelectionListener(e->{
-            for(ObjectActionListener<List<Category>> listener : selectionListeners) {
-                listener.onPerformed(categoryTree.getSelectedItems().stream().toList());
+            for(ObjectActionListener<Category> listener : selectionListeners) {
+                listener.onPerformed(categoryTree.getSelectedItems().stream().findFirst().orElse(null));
             }
         });
 
-        add(categoryTree);
-    }
-
-    /**
-     * Recursively expands and selects categories
-     * @param category
-     * @param isSelected
-     */
-    private void recursiveSelecteStep(Category category, boolean isSelected) {
-        if(isSelected) {
-            categoryTree.select(category);
-            categoryTree.expand(category);
-        } else {
-            categoryTree.deselect(category);
+        if(hasEditRow) {
+            categoryTree.addColumn(new ComponentRenderer<>(this::generateEditButton));
         }
-        categoryTree.getTreeData().getChildren(category).
-                forEach(child-> recursiveSelecteStep(child, isSelected));
-    }
 
-    /**
-     * Finds which elements were selected and deselected and
-     * recursively (de-)selects their children
-     * @param selection list of selected categories
-     */
-    private void recursiveMultiselect(List<Category> selection) {
-        List<Category> added = selection.stream().filter(el->!previousSelection.contains(el)).toList();
-        List<Category> removed = previousSelection.stream().filter(el->!selection.contains(el)).toList();
-
-        /* There is double-selection of selected of elements, but it should not affect overall behaviour.
-            Unless someone hacks into the component and subscribes to listener of TreeGrid directly.
-            But in that case it's their problem */
-        added.forEach(category->recursiveSelecteStep(category, true));
-        removed.forEach(category->recursiveSelecteStep(category, false));
-        previousSelection = selection;
+        add(categoryTree);
     }
 
     public void update() {
@@ -77,7 +49,42 @@ public class CategoryPicker extends VerticalLayout {
         categoryTree.setTreeData(treeData);
         categoryTree.getDataProvider().refreshAll();
     }
-    public void addSelectionListener(ObjectActionListener<List<Category>> listener) {
+
+    public void addSelectionListener(ObjectActionListener<Category> listener) {
         selectionListeners.add(listener);
+    }
+    public void addEditButtonListener(ObjectActionListener<Category> listener) {
+        editButtonListeners.add(listener);
+    }
+
+    private Button generateEditButton(Category category) {
+        return new Button(new Icon("lumo", "menu"),
+                e->editButtonListeners.forEach(listener -> listener.onPerformed(category))
+        );
+    }
+
+    private List<Category> getCategoryTreeBranch(List<Category> categories) {
+        List<Category> children = new ArrayList<>(List.of());
+        for(Category category : categories) {
+            children.addAll(categoryTree.getTreeData().getChildren(category));
+        }
+        List<Category> result = new ArrayList<>(categories);
+        if(!children.isEmpty()) {
+            result.addAll(getCategoryTreeBranch(children));
+        }
+        return result;
+    }
+
+    /**
+     * @param category Parent category
+     * @Returns all subcategories of given category <b>and provided category</b><br>
+     * If category is not present in CategoryPicker (and as such, most likely in Repository)
+     * then empty list is returned.
+     * If category has no children only itself is returned;
+     */
+    public List<Category> getCategoryWithChildren(Category category) {
+        List<Category> categories = new ArrayList<>(List.of(category));
+        categories.addAll(getCategoryTreeBranch(List.of(category)));
+        return categories;
     }
 }

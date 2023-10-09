@@ -3,6 +3,7 @@ package ru.ntik.book.library.view.admin;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -14,6 +15,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.server.StreamResource;
 import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.math.NumberUtils;
 import ru.ntik.book.library.domain.BookDefinition;
@@ -30,6 +32,7 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class BookDefinitionEditForm extends VerticalLayout {
 
@@ -39,6 +42,8 @@ public class BookDefinitionEditForm extends VerticalLayout {
     private BookDefinitionService bookDefinitionService;
 
     // UI
+    private final Image image = new Image(new StreamResource("book-cover.png",
+            ()->getClass().getResourceAsStream("/book-cover.png")), "book-cover");
     private final TextField title = new TextField("Название");
     private final TextArea description = new TextArea("Описание");
     private final IntegerField releaseYearPicker = new IntegerField("Год выпуска");
@@ -130,6 +135,9 @@ public class BookDefinitionEditForm extends VerticalLayout {
      * Defines UI components and binds them
      */
     private void defineUI() {
+        image.setHeight("320px");
+        image.setWidth("320px");
+
         title.setId("book-form-name");
         title.setWidthFull();
         title.setPlaceholder("Название");
@@ -145,6 +153,7 @@ public class BookDefinitionEditForm extends VerticalLayout {
         pagesCountInput.setPlaceholder("128");
 
         languageSelect.setId("book-form-lang");
+        languageSelect.setLabel("Язык");
         languageSelect.setItems(BookLanguage.values());
         languageSelect.setItemLabelGenerator(BookLanguageTranslated::getTranslatedName);
 
@@ -163,9 +172,12 @@ public class BookDefinitionEditForm extends VerticalLayout {
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         removeButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         add(
-                title, description, releaseYearPicker, pagesCountInput, languageSelect,
-                authorsList, coverTypeInput, isbnInput, selectPublisherButton, selectCategoryButton,
-                new HorizontalLayout(submitButton, removeButton, cancelButton)
+                image,
+                title,
+                description,
+                new HorizontalLayout(releaseYearPicker, pagesCountInput, languageSelect, coverTypeInput),
+                new HorizontalLayout(isbnInput, selectCategoryButton, authorsList, selectPublisherButton),
+                new HorizontalLayout(submitButton, cancelButton, removeButton)
         );
     }
 
@@ -231,12 +243,12 @@ public class BookDefinitionEditForm extends VerticalLayout {
     void openCategoryPickDialog() {
         Dialog categoryPickerDialog = new Dialog();
         categoryPickerDialog.setHeaderTitle("Выбрать категорию");
-        CategoryPicker categoryPicker = new CategoryPicker(categoryService, false);
+        CategoryPicker categoryPicker = new CategoryPicker(categoryService);
         Button categoryPickerCancelButton = new Button("Отмена", e->categoryPickerDialog.close());
 
         categoryPickerDialog.setMinWidth("30em");
-        categoryPicker.addSelectionListener(cats->cats.stream().findFirst().ifPresent(
-                    cat->{
+        categoryPicker.addSelectionListener(category->Optional.of(category).ifPresent(cat->
+                    {
                         bookDefinition.setCategory(cat);
                         selectCategoryButton.setText(getCategoryButtonText(cat.getName()));
                         categoryPickerDialog.close();
