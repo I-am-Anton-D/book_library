@@ -2,6 +2,7 @@ package ru.ntik.book.library.view.admin;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -27,30 +28,43 @@ import static ru.ntik.book.library.util.Constants.*;
  */
 public class CategoryEditForm extends VerticalLayout {
 
-    private final Category category;
+    private Category category;
 
     private final Binder<Category> binder = new Binder<>(Category.class);
+    private final CategoryService categoryService;
 
     // UI Components
     private TextField title = new TextField();
     private TextArea description = new TextArea();
-    private Button submitButton = new Button("Сохранить", e->this.save());
-    private Button cancelButton = new Button("Отмена", e->this.close());
+
+    private Button addChildButton = new Button("Добавить подкатегорию");
+    private Button removeButton = new Button("Удалить", e->this.delete(null));
+    private Button submitButton = new Button("Сохранить", e->this.save(null));
+    private Button cancelButton = new Button("Отмена", e->this.close(null));
     private final List<ObjectActionListener<Category>> onSaveListeners = new ArrayList<>();
+    private final List<ObjectActionListener<Category>> onDeleteListeners = new ArrayList<>();
     private final List<ObjectActionListener<Category>> onCloseListeners = new ArrayList<>();
     public CategoryEditForm(CategoryService categoryService, Category category, Category parent) {
-        if (category == null) {
-            Category root = categoryService.findRoot();
-            if (parent == null) {
-                parent = root;
+        this.categoryService = categoryService;
+
+        if (category == null) { // assuming creation of new category
+            // disabling "remove" and "add child" buttons, as they shouldn't be accessible for freshly created category
+            removeButton.setEnabled(false);
+            addChildButton.setEnabled(false);
+
+            if (parent == null) { // if parent is also unspecified assuming creation new root category
+                parent = categoryService.findRoot();
             }
             // TODO: logic for specifying category creator
-            category = new Category("Название категории", null, 0L, parent);
+            category = new Category("Название категории", "Описание категории", 0L, parent);
         }
+        this.category = category;
 
-        if(category.getDescription() == null)
-            category.setDescription("[Добавить описание]");
+        bindBean(category);
+        setupUI();
+    }
 
+    private void bindBean(Category category) {
         binder.forField(title).withValidator(text->text.length() >= MIN_STRING_LENGTH,
                         "Слишком короткое название (должно быть >= " + MIN_STRING_LENGTH + ")").
                 withValidator(text->text.length() < PO_MAX_NAME_LENGTH, "Название не может быть длиннее " +
@@ -60,11 +74,18 @@ public class CategoryEditForm extends VerticalLayout {
                 withValidator(text->text.length() < LONG_STRING_LENGTH, "Описание не может быть длиннее " +
                         LONG_STRING_LENGTH + " символов").bind(Category::getDescription, Category::setDescription);
         binder.readBean(category);
+    }
 
-        // UI
+    private void setupUI() {
+        if (addChildButton.isEnabled()) {
+            addChildButton.addClickListener(e->openAddChildDialog(this.category));
+        }
+
+        title.setId("category-form-name");
         title.setWidthFull();
         title.setLabel("Название");
         title.setPlaceholder("Название");
+        description.setId("category-form-desc");
         description.setMinHeight("2em");
         description.setMaxHeight("6em");
         description.setWidthFull();
@@ -72,34 +93,88 @@ public class CategoryEditForm extends VerticalLayout {
         description.setPlaceholder("Описание");
 
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        add(title, description, new HorizontalLayout(submitButton, cancelButton));
+        addChildButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+        removeButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
-        this.category = category;
+        add(title, description, new HorizontalLayout(addChildButton, removeButton), new HorizontalLayout(submitButton, cancelButton));
     }
+
     public void addOnSaveListener(ObjectActionListener<Category> listener) {
         onSaveListeners.add(listener);
     }
-
+    public void addOnDeleteListener(ObjectActionListener<Category> listener) {
+        onDeleteListeners.add(listener);
+    }
     public void addOnCloseListener(ObjectActionListener<Category> listener) {
         onCloseListeners.add(listener);
     }
 
-    private void save() {
+    private void save(Category category) {
+        if (category == null) {
+            category = this.category;
+        }
+
         try {
             binder.writeBean(category);
+            categoryService.save(category);
+            Notification.show("Сохранено").addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            for (ObjectActionListener<Category> listener : onSaveListeners) {
+                listener.onPerformed(category);
+            }
         } catch (ValidationException e) {
             Notification.show("Введены некорректные данные").addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
+    }
 
-        for(ObjectActionListener<Category> listener : onSaveListeners) {
+    private void delete(Category category) {
+        if (category == null) {
+            category = this.category;
+        }
+
+        if (!categoryService.isEmpty(category)) {
+            Notification.show("Невозможно удалить. Категория не пуста.").addThemeVariants(NotificationVariant.LUMO_ERROR);
+        } else {
+            categoryService.remove(category);
+            Notification.show("Удалено").addThemeVariants(NotificationVariant.LUMO_PRIMARY);
+            for (ObjectActionListener<Category> listener : onDeleteListeners) {
+                listener.onPerformed(category);
+            }
+        }
+    }
+
+    private void close(Category category) {
+        if (category == null) {
+            category = this.category;
+        }
+
+        for (ObjectActionListener<Category> listener : onCloseListeners) {
             listener.onPerformed(category);
         }
     }
 
-    private void close() {
-        for(ObjectActionListener<Category> listener : onCloseListeners) {
-            listener.onPerformed(category);
-        }
+    private void openAddChildDialog(Category category) {
+        CategoryEditForm addView = new CategoryEditForm(categoryService, null, category);
+        Dialog addDialog = new Dialog();
+        addDialog.setId("category-add-child-dialog");
+
+        addView.addOnSaveListener(listener->{
+            for (ObjectActionListener<Category> externalListener : onSaveListeners) {
+                externalListener.onPerformed(category);
+            }
+            Notification.show("Подкатегория сохранена").addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            addDialog.close();
+            this.close(category);
+        });
+        addView.addOnCloseListener(listener->{
+            addDialog.close();
+            this.close(category);
+        });
+
+        addDialog.setHeaderTitle("Создать под-категорию " + "\"" + category.getName() + "\"");
+
+        addDialog.add(addView);
+        add(addDialog);
+        addDialog.open();
     }
 
     // TODO: modal dialog for picking parent category or other solution for moving sub-categories

@@ -34,4 +34,16 @@ public class BookDefinitionService {
     public List<BookDefinition> findAll() {
         return bookRepository.findAll();
     }
+
+    public void save(BookDefinition bookDefinition) {
+        bookRepository.save(bookDefinition);
+    }
+
+    public void remove(BookDefinition bookDefinition) {
+        bookRepository.delete(bookDefinition);
+    }
+
+    public boolean isEmpty(BookDefinition bookDefinition) {
+        return bookDefinition.getInstancesInfo().getInstanceCount() == 0;
+    }
 }
